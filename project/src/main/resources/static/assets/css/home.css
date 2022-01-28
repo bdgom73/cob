@@ -1,0 +1,61 @@
+@import "./font.css";
+
+a.logo{
+    text-decoration: none;
+}
+.logo{
+    font-family: "Collonse";
+    font-size: 30px;
+    color : #222222;
+    font-weight: bold;
+}
+.header{
+    background-color: #fff;
+}
+.header .header_path{
+    display: flex;
+    align-items: center;
+}
+.header .header_path a {
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    color: #222222;
+}
+.main_bg{
+    position: relative;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+.main_bg::before{
+    content: "";
+    background-image: url("/assets/images/home_bg.jpg");
+    background-size: cover 100%;
+    opacity: 0.33; 
+    filter: alpha(opacity=33); /* IE8 및 그 이하 버전용 */
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    transform: scale(1.5) rotate(-30deg);
+}
+
+.main_bg .main_body{
+    color: #000;
+    position: relative;
+}
+
+.main_card{
+    padding: 1rem;
+    padding: 10rem 0;
+}
+
+footer a{
+    text-decoration: none;
+}
+footer .title{
+    color : #a09fff;
+}
+footer ul li a{
+    color : #fff;
+}

@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/teamProject
+    username: sa
+    password: 1234
+    driver-class-name: org.h2.Driver
+    sql-script-encoding: UTF-8
+
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size : 500
+        # show_sql: true
+  devtools:
+    livereload:
+      enabled: true
+
+logging.level:
+  org.hibernate.SQL: debug
+#  org.hibernate.type: trace
+
