@@ -3,7 +3,9 @@ package team.project.Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import team.project.Dto.JoinMemberDto;
 import team.project.Entity.Member;
+import team.project.Entity.RoleType;
 import team.project.Repository.MemberRepository;
 
 @Service
@@ -13,14 +15,22 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final JwtToken jwtToken;
 
-    public void join(){
-        // TODO join member
+    public Long join(JoinMemberDto memberDto){
+        memberRepository.findByEmail(memberDto.getEmail()).ifPresent(m->{
+            throw new IllegalStateException("이미 존재하는 계정입니다");
+        });
+        checkedPassword(memberDto.getPassword1(), memberDto.getPassword2());
+        Member member = new Member(
+                memberDto.getEmail(), memberDto.getPassword1(), memberDto.getName(), memberDto.getNickname(), RoleType.USER
+        );
+        memberRepository.save(member);
+        return member.getId();
     }
 
-    public String login(String email, String password){
+    public Long login(String email, String password){
         Member member = findByEmail(email);
         checkedPassword(member.getPassword(), password);
-        return jwtToken.createToken(member.getId());
+        return member.getId();
     }
 
     public Member findById(Long id){
@@ -34,7 +44,7 @@ public class MemberService {
     }
 
     private void checkedPassword(String password1 , String password2){
-        if(password1.equals(password2))
+        if(!password1.equals(password2))
             throw new IllegalStateException("패스워드가 올바르지 않습니다");
     }
 }

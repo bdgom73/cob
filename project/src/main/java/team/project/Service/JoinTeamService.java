@@ -21,15 +21,29 @@ public class JoinTeamService {
             throw new IllegalStateException("내역이 없습니다");
         });
     }
-    public JoinTeam findByMemberIdAndTeamId(Long memberId, Long teamId){
+    public JoinTeam findByMemberInTeam(Long memberId, Long teamId){
         return joinTeamRepository.findByMemberAndTeam(memberId, teamId).orElseThrow(() -> {
             throw new IllegalStateException("내역이 없습니다");
         });
     }
+    public JoinTeam findMemberByMemberInTeam(Long memberId, Long teamId){
+        return joinTeamRepository.findMemberByMemberAndTeam(memberId, teamId).orElseThrow(() -> {
+            throw new IllegalStateException("내역이 없습니다");
+        });
+    }
+    public JoinTeam findMemberAndTeamByMemberInTeam(Long memberId, Long teamId){
+        return joinTeamRepository.findMemberAndTeamByMemberAndTeam(memberId, teamId).orElseThrow(() -> {
+            throw new IllegalStateException("내역이 없습니다");
+        });
+    }
+
     public List<JoinTeam> findMemberByTeamAndState(Long teamId, JoinState state){
         return joinTeamRepository.findMemberByTeamAndState(teamId, state);
     }
     public List<JoinTeam> findAllByTeamAndState(Long teamId, JoinState state){
         return joinTeamRepository.findAllByTeamAndState(teamId, state);
+    }
+    public List<JoinTeam> findAllByTeam(Long teamId){
+        return joinTeamRepository.findAllByTeam(teamId);
     }
 }

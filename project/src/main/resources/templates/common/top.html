@@ -2,10 +2,21 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <header th:fragment="top" class="header site-header sticky-top py-1">
     <nav class="container-fluid d-flex flex-column flex-md-row justify-content-between">
-        <a class="logo py-2" href="#" aria-label="Logo">Cob</a>
-        <div class="header_path py-2 d-none d-md-flex">
-            <a class="me-3 d-none d-md-inline-block" href="#">로그인</a>
-            <a class="d-none d-md-inline-block" href="#">가입</a>
+        <a class="logo py-2" href="/" aria-label="Logo">Cob</a>
+        <div th:if="${loginMember} == null" th:object="${loginMember}">
+            <div class="header_path py-2 d-none d-md-flex">
+                <a class="me-3 d-none d-md-inline-block" href="/login">로그인</a>
+                <a class="d-none d-md-inline-block" href="/join">가입</a>
+            </div>
+        </div>
+        <div th:unless="${loginMember} == null" th:object="${loginMember}">
+            <div class="header_path py-2 d-none d-md-flex">
+                <span class="me-3" style="font-size : 12px">
+                    안녕하세요 <a href="#" th:text="*{nickname}"></a>님
+                </span>
+                <a class="me-3 d-none d-md-inline-block" th:href="@{|/members/*{memberId}|}">내정보</a>
+                <a class="d-none d-md-inline-block" href="/logout">로그아웃</a>
+            </div>
         </div>
     </nav>
 </header>

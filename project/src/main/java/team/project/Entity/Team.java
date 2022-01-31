@@ -26,6 +26,9 @@ public class Team extends BaseEntity{
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
     private List<JoinTeam> joinTeams = new ArrayList<>();
 
+    @OneToOne(mappedBy = "team", cascade = CascadeType.ALL)
+    private ProjectCategory projectCategory;
+
     protected Team(){
 
     }
@@ -38,14 +41,28 @@ public class Team extends BaseEntity{
     public void setMember(Member member){
         this.member = member;
     }
-
+    public void setProjectCategory(ProjectCategory category){
+        projectCategory = category;
+    }
 
     public static Team createTeam(String name, String introduction, Member member){
-        Team team = new Team(name, introduction);
-        team.setMember(member);
-        JoinTeam joinTeam = JoinTeam.applyTeam(team, member);
-        joinTeam.stateChange(JoinState.OK);
+        Team team = initTeam(name, introduction, member);
         return team;
     }
 
+
+    public static Team createTeam(String name, String introduction, Member member, ProjectCategory category){
+        Team team = initTeam(name, introduction, member);
+        category.setTeam(team);
+        return team;
+    }
+
+    private static Team initTeam(String name, String introduction, Member member) {
+        Team team = new Team(name, introduction);
+        team.setMember(member);
+        JoinTeam joinTeam = JoinTeam.applyTeam(team, member);
+        joinTeam.changeRole(TeamRole.LEADER);
+        joinTeam.changeState(JoinState.OK);
+        return team;
+    }
 }

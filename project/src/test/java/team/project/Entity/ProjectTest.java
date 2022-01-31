@@ -33,7 +33,7 @@ class ProjectTest {
 
         LocalDateTime startDate = LocalDateTime.of(2022, Month.FEBRUARY, 1, 0,0);
         LocalDateTime endDate = LocalDateTime.of(2022, Month.FEBRUARY, 20, 0,0);
-        Project project = Project.create("Spring JPA TEST", "이건 뭐 이런겁니다",startDate, endDate, team);
+        Project project = Project.create("Spring JPA TEST", "이건 뭐 이런겁니다",startDate, endDate, team, member);
         em.persist(project);
     }
 }

@@ -52,7 +52,7 @@ public class JwtToken {
         }
     }
 
-    private boolean expired(String token) {
+    public boolean expired(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
             return !claims.getBody().getExpiration().before(new Date());

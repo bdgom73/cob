@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/headerV1 :: common_headerV1(~{::title},~{::link})">
+    <title>Cob - 회원가입</title>
+    <link th:href="@{/assets/css/home.css}" href="./assets/css/home.css" rel="stylesheet" type="text/css" media="all">
+</head>
+<body th:replace="common/basicLayout :: basic_body(~{::main})">
+    <main>
+        <section style="margin-top : 5rem ">
+            <div class="w-50 p-3 shadow-lg rounded bg-body" style="margin : 0 auto; max-width : 600px">
+                <div class="text-center mb-3">
+                    <a class="logo py-2" href="#" aria-label="Logo">Cob</a>
+                    <h3>회원가입</h3>
+                </div>
+                <form th:action method="post" th:object="${joinFormData}" style="min-width : 200px; max-width : 400px; margin: 0 auto">
+                    <div th:if="${#fields.hasGlobalErrors()}">
+                        <p class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">전체 오류 메시지</p>
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-text"><i class="bi bi-person-fill"></i></div>
+                        <input type="text" class="form-control" id="email" th:field="*{email}" placeholder="Email">
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-text"><i class="bi bi-lock-fill"></i></div>
+                        <input type="password" class="form-control" id="password1" th:field="*{password1}" placeholder="Password">
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-text"><i class="bi bi-lock-fill"></i></div>
+                        <input type="password" class="form-control" id="password2" th:field="*{password2}" placeholder="Confirm Password">
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" th:field="*{name}" placeholder="name" aria-label="name">
+                        </div>
+                        <div class="col">
+                            <label for="nickname" class="form-label">Nickname</label>
+                            <input type="text" class="form-control" id="nickname" th:field="*{nickname}" placeholder="nickname" aria-label="nickname">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Sign up</button>
+                    <div class="text-muted mt-3 text-center" style="font-size : 12px">
+                        이미 회원이신가요? <a href="/login" class="text-reset">로그인</a> 하러가기
+                    </div>
+
+                </form>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

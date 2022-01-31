@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body th:fragment="basic_body(content)">
+    <header th:replace="~{common/top :: top}"></header>
+    <main th:replace="${content}"></main>
+    <footer th:replace="~{common/bottom :: bottom}"></footer>
+</body>
+</html>

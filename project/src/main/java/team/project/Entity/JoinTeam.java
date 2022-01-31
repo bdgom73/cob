@@ -18,6 +18,8 @@ public class JoinTeam {
 
     private LocalDateTime joinDate;
 
+    private TeamRole teamRole;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -38,14 +40,19 @@ public class JoinTeam {
         joinDate = LocalDateTime.now();
     }
 
-    public void stateChange(JoinState state){
+    public void changeState(JoinState state){
         joinState = state;
         joinDate = LocalDateTime.now();
+    }
+
+    public void changeRole(TeamRole role){
+        teamRole = role;
     }
 
     public static JoinTeam applyTeam(Team team , Member member){
         JoinTeam joinTeam = new JoinTeam();
         joinTeam.apply(team, member);
+        joinTeam.changeRole(TeamRole.APPLICANT);
         return joinTeam;
     }
 }

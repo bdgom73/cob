@@ -25,5 +25,29 @@ public class Content extends BaseEntity{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_category_id")
-    private ProjectCategory category;
+    private ProjectCategory projectCategory;
+
+    protected Content() {
+
+    }
+
+    public Content(String title, String text) {
+        this.title = title;
+        this.text = text;
+    }
+
+    public void setProject(Project project){
+        this.project = project;
+    }
+    public void setMember(Member member){
+        this.member = member;
+    }
+    public void setCategory(ProjectCategory category){
+        projectCategory = category;
+    }
+
+    public void updateContent(String title, String text){
+        this.title = title;
+        this.text = text;
+    }
 }
