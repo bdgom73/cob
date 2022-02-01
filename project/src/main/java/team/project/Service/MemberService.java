@@ -45,6 +45,6 @@ public class MemberService {
 
     private void checkedPassword(String password1 , String password2){
         if(!password1.equals(password2))
-            throw new IllegalStateException("패스워드가 올바르지 않습니다");
+            throw new IllegalStateException("패스워드가 일치하지 않습니다.");
     }
 }

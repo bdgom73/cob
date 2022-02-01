@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import team.project.Entity.*;
+import team.project.Repository.JoinTeamRepository;
 import team.project.Service.ArgumentResolver.Login;
 import team.project.Service.JoinTeamService;
 import team.project.Service.TeamService;
@@ -29,6 +30,7 @@ public class TeamController {
 
     private final TeamService teamService;
     private final JoinTeamService joinTeamService;
+    private final JoinTeamRepository joinTeamRepository;
 
     @GetMapping("/teams")
     public String teams(
@@ -44,8 +46,8 @@ public class TeamController {
 
     @GetMapping("/teams/{teamId}")
     public String teamView(@PathVariable("teamId") Long teamId, Model model){
-        List<JoinMemberResponse> resultList = joinTeamService.findAllByTeam(teamId).stream().map(j ->
-                new JoinMemberResponse(
+        List<JoinMemberResponse> resultList = joinTeamService.findAllByTeam(teamId)
+                .stream().map(j -> new JoinMemberResponse(
                         j.getMember().getId(), j.getMember().getName(), j.getMember().getNickname(),
                         j.getJoinState(), j.getJoinDate())).collect(Collectors.toList());
 
@@ -101,6 +103,49 @@ public class TeamController {
         model.addAttribute("team",team);
         return "team/editTeamForm";
     }
+
+    @PostMapping("/teams/{teamId}/edit")
+    public String editTeam(
+            @Login Long memberId, @PathVariable("teamId") Long teamId,
+            @Validated @ModelAttribute("team") TeamForm form, BindingResult bindingResult
+    ){
+        if(bindingResult.hasErrors()){
+            return "redirect:/teams/"+teamId;
+        }
+
+        if(memberId == null){
+            return "redirect:/teams/"+teamId;
+        }
+
+        teamService.editTeam(teamId, form.getName(), form.getIntroduction(), memberId);
+
+        return "redirect:/teams/"+teamId;
+    }
+
+    @PostMapping("/team/{teamId}/state")
+    @ResponseBody
+    public void changeState(@PathVariable("teamId") Long teamId, @Login Long memberId,
+                            @RequestParam("state") String state, @RequestParam("memberId") Long joinMemberId){
+
+        JoinTeam joinTeam = joinTeamService.findMemberAndTeamByMemberInTeam(joinMemberId, teamId);
+
+        Team team = joinTeam.getTeam();
+
+        if(!team.getMember().getId().equals(memberId)){
+            throw new IllegalStateException("권한이 없습니다");
+        };
+
+        String s = state.toUpperCase();
+        log.info("state = [{}][{}]", state, s );
+        if(s.equals("OK") || s.equals("WAITING") || s.equals("BAN")) {
+            teamService.changeState(teamId,joinMemberId,JoinState.valueOf(s));
+        }else if(s.equals("REJECT")){
+            teamService.doReject(teamId,joinMemberId);
+        }else{
+            throw new IllegalStateException("상태변경에 실패했습니다");
+        }
+    }
+
 
     @Data
     class TeamForm{

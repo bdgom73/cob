@@ -45,6 +45,10 @@ public class Team extends BaseEntity{
         projectCategory = category;
     }
 
+    public void changeTeam(String name, String introduction){
+        this.name = name;
+        this.introduction = introduction;
+    }
     public static Team createTeam(String name, String introduction, Member member){
         Team team = initTeam(name, introduction, member);
         return team;

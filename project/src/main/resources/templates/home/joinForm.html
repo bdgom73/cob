@@ -16,26 +16,35 @@
                     <div th:if="${#fields.hasGlobalErrors()}">
                         <p class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">전체 오류 메시지</p>
                     </div>
+                    <div class="text-danger error_fs" th:errors="*{email}"></div>
                     <div class="input-group mb-3">
                         <div class="input-group-text"><i class="bi bi-person-fill"></i></div>
                         <input type="text" class="form-control" id="email" th:field="*{email}" placeholder="Email">
                     </div>
+
+                    <div class="text-danger error_fs" th:errors="*{password1}"></div>
                     <div class="input-group mb-3">
                         <div class="input-group-text"><i class="bi bi-lock-fill"></i></div>
                         <input type="password" class="form-control" id="password1" th:field="*{password1}" placeholder="Password">
                     </div>
+
+                    <div class="text-danger error_fs" th:errors="*{password2}"></div>
                     <div class="input-group mb-3">
                         <div class="input-group-text"><i class="bi bi-lock-fill"></i></div>
                         <input type="password" class="form-control" id="password2" th:field="*{password2}" placeholder="Confirm Password">
                     </div>
+
                     <div class="row mb-3">
                         <div class="col">
                             <label for="name" class="form-label">Name</label>
                             <input type="text" class="form-control" id="name" th:field="*{name}" placeholder="name" aria-label="name">
+                            <div class="text-danger error_fs" th:errors="*{name}"></div>
                         </div>
+
                         <div class="col">
                             <label for="nickname" class="form-label">Nickname</label>
                             <input type="text" class="form-control" id="nickname" th:field="*{nickname}" placeholder="nickname" aria-label="nickname">
+                            <div class="text-danger error_fs" th:errors="*{nickname}"></div>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Sign up</button>

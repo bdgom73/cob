@@ -5,7 +5,7 @@
         <a class="logo py-2" href="/" aria-label="Logo">Cob</a>
         <div th:if="${loginMember} == null" th:object="${loginMember}">
             <div class="header_path py-2 d-none d-md-flex">
-                <a class="me-3 d-none d-md-inline-block" href="/login">로그인</a>
+                <a class="me-3 d-none d-md-inline-block" th:href="@{/login(redirectURI=${#request.getRequestURI()} )}">로그인</a>
                 <a class="d-none d-md-inline-block" href="/join">가입</a>
             </div>
         </div>

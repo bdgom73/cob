@@ -1,0 +1,79 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div class="modal fade" th:fragment="join_team(team)" id="join_members_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="join_members_label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="join_members_label">가입 현황</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <tr>
+                        <th>이름</th>
+                        <th>상태</th>
+                        <th>신청/가입일</th>
+                        <th></th>
+                    </tr>
+                    <tr th:object="${member}" th:each="member : ${team.getJoinMembers()}">
+                        <td>
+                            <div th:text="*{memberName}"></div>
+                            <div th:text="|(*{memberNickname})|"></div>
+                        </td>
+                        <td>
+                            <div th:if="${member.memberId != team.leaderId}" class="text-center fw-bold" >
+                                <span th:if="${member.getJoinState().toString().equals('OK')}"> 승인 </span>
+                                <span th:if="${member.getJoinState().toString().equals('WAITING')}"> 대기 </span>
+                                <span th:if="${member.getJoinState().toString().equals('BAN')}" > 밴 </span>
+                            </div>
+                            <select th:if="${member.memberId != team.leaderId}" class="form-select" aria-label="select joinMember" th:id="|join_member_state_${member.memberId}|">
+                                <option value="OK" th:selected="${member.joinState.toString() == 'OK'}">승인</option>
+                                <option value="WAITING" th:selected="${member.joinState.toString() == 'WAITING'}">대기</option>
+                                <option value="BAN" th:selected="${member.joinState.toString() == 'BAN'}">밴</option>
+                                <option th:if="${member.joinState.toString() == 'OK'}" value="REJECT">
+                                    <th:block>퇴장</th:block>
+                                </option>
+                                <option th:if="${member.joinState.toString() == 'WAITING'}" value="REJECT">
+                                    <th:block>거부</th:block>
+                                </option>
+                                <option th:if="${member.joinState.toString() == 'BAN'}" value="REJECT">
+                                    <th:block>밴취소</th:block>
+                                </option>
+                            </select>
+                            <div th:unless="${member.memberId != team.leaderId}" class="text-center">
+                                <span class="btn btn-danger">팀장</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${#temporals.format(member.joinDate, 'yyyy-MM-dd HH시 mm분')}"></span>
+                        </td>
+                        <td>
+                            <button th:if="${member.memberId != team.leaderId}" class="btn btn-warning" type="button" th:onclick="| changeState(${team.teamId},${member.memberId}) |">변경</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:onclick="location.reload()">Close</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function changeState(teamId, memberId){
+            const select = document.querySelector("#join_member_state_"+ memberId);
+            if(window.confirm(select.value+" 정말로 변경하시겠습니까?")){
+                fetch(`/team/${teamId}/state?state=${select.value}&memberId=${memberId}`,{
+                    method : "POST",
+                    headers : {
+                        'Content-Type' : 'application/json'
+                    }
+                }).then(res=>{
+                    window.alert("변경완료");
+                }).catch(e=>{
+                    window.alert("변경에 실패했습니다.");
+               });
+            }
+        }
+    </script>
+</div>
+</html>

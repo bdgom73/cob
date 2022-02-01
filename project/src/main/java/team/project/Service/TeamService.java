@@ -15,6 +15,7 @@ import team.project.Repository.JoinTeamRepository;
 import team.project.Repository.TeamRepository;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @Service
@@ -45,27 +46,40 @@ public class TeamService {
     }
 
     @Transactional
+    public Long editTeam(Long teamId, String teamName, String introduction, Long memberId){
+        Team team = findById(teamId);
+        if(!Objects.equals(team.getMember().getId(), memberId)){
+            return null;
+        }
+        team.changeTeam(teamName, introduction);
+        return team.getId();
+    }
+
+
+    @Transactional
     public void doAccept(Long teamId, Long memberId){
-        JoinTeam joinTeam = joinTeamService.findByMemberInTeam(memberId, teamId);
-        joinTeam.changeState(JoinState.OK);
+        changeState(teamId, memberId, JoinState.OK);
     }
 
     @Transactional
     public void doBan(Long teamId, Long memberId){
-        JoinTeam joinTeam = joinTeamService.findByMemberInTeam(memberId, teamId);
-        joinTeam.changeState(JoinState.BAN);
-    }
-
-    @Transactional
-    public void doUnBan(Long teamId, Long memberId){
-        JoinTeam joinTeam = joinTeamService.findByMemberInTeam(memberId, teamId);
-        joinTeamRepository.delete(joinTeam);
+        changeState(teamId, memberId, JoinState.BAN);
     }
 
     @Transactional
     public void doReject(Long teamId, Long memberId){
-        JoinTeam joinTeam = joinTeamService.findByMemberInTeam(memberId, teamId);
+        JoinTeam joinTeam = changeState(teamId, memberId, null);
         joinTeamRepository.delete(joinTeam);
+    }
+
+    @Transactional
+    public JoinTeam changeState(Long teamId, Long memberId, JoinState state){
+        JoinTeam joinTeam = joinTeamService.findByMemberInTeam(memberId, teamId);
+        if(state == null){
+            return joinTeam;
+        }
+        joinTeam.changeState(state);
+        return joinTeam;
     }
 
     public Team findById(Long teamId){

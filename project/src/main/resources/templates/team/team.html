@@ -46,11 +46,11 @@
             </tr>
             <tr>
                 <td colspan="3">
-
                     <div class="d-inline-block" th:if="${loginMember != null}">
                         <div th:if="${loginMember.memberId == team.leaderId}">
                             <button type="button" class="btn btn-warning" th:onclick="|location.href='@{/teams/{teamId}/edit(teamId=${team.teamId})}'|">수정</button>
-                            <button type="button" class="btn btn-dark">가입현황</button>
+                            <!--  가입현황 Modal 버튼  -->
+                            <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#join_members_modal">가입현황</button>
                         </div>
                     </div>
                     <div class="d-inline-block" th:unless="${loginMember != null}">
@@ -58,9 +58,10 @@
                     </div>
                 </td>
             </tr>
-
         </table>
     </div>
+    <!--  가입현황 Modal  -->
+    <div th:replace="team/modal/JoinTeamModal :: join_team(${team})"></div>
   </section>
 </main>
 </body>

@@ -13,6 +13,7 @@ import team.project.Service.MemberService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -25,28 +26,34 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String requestURI = request.getRequestURI();
-        log.info("LoginCheckURI = [{}][{}]", requestURI, handler);
+        String contentType = request.getContentType();
+        log.info("LoginCheckURI = [{}][{}][{}]", requestURI, handler, contentType);
+
         return true;
     }
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
         HttpSession session = request.getSession();
+        String contentType = request.getContentType();
         Object sessionObject = session.getAttribute("UID");
         log.info("uid = {}",sessionObject);
         if(sessionObject != null){
             Long uid = (Long) sessionObject;
             Optional<Member> findMember = memberRepository.findById(uid);
 
-            if(findMember.isPresent()){
-                Member member = findMember.get();
-                LoginMemberDto memberDto = new LoginMemberDto(member.getId(), member.getEmail(), member.getName(), member.getNickname());
-                log.info("login Member = {}", memberDto);
-                modelAndView.addObject("loginMember", memberDto);
-            }else{
-                session.invalidate();
-                modelAndView.addObject("loginMember", new LoginMemberDto());
+            if(!Objects.equals(contentType, "application/json")){
+                if(findMember.isPresent()){
+                    Member member = findMember.get();
+                    LoginMemberDto memberDto = new LoginMemberDto(member.getId(), member.getEmail(), member.getName(), member.getNickname());
+                    log.info("login Member = {}", memberDto);
+                    modelAndView.addObject("loginMember", memberDto);
+                }else{
+                    session.invalidate();
+                    modelAndView.addObject("loginMember", new LoginMemberDto());
+                }
             }
+
 
         }
 

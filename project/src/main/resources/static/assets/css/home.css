@@ -85,3 +85,6 @@ main{
 .danger-span{
     color : #ec2f2f;
 }
+.error_fs{
+    font-size : 12px;
+}
