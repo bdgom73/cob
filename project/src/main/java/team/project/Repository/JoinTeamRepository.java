@@ -26,6 +26,9 @@ public interface JoinTeamRepository extends JpaRepository<JoinTeam, Long> {
     @Query("SELECT j FROM JoinTeam j JOIN FETCH j.member m JOIN FETCH j.team t WHERE j.team.id = :teamId AND j.joinState = :state")
     List<JoinTeam> findAllByTeamAndState(@Param("teamId") Long teamId ,@Param("state") JoinState state);
 
+    @Query("SELECT j FROM JoinTeam j JOIN FETCH j.member m JOIN FETCH j.team t WHERE j.team.id = :teamId AND NOT j.joinState = :state")
+    List<JoinTeam> findAllByTeamAndNotState(@Param("teamId") Long teamId ,@Param("state") JoinState state);
+
     @Query("SELECT j FROM JoinTeam j JOIN FETCH j.member m JOIN FETCH j.team t WHERE j.team.id = :teamId")
     List<JoinTeam> findAllByTeam(@Param("teamId") Long teamId);
 }

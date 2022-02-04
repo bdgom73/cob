@@ -1,0 +1,68 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<nav th:fragment="team_sidebar(teamId)" id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+    <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" th:classappend="${#request.getRequestURI()} == '/teams/'+${teamId} ? 'active' " aria-current="page" th:href="@{/teams/} + ${teamId}">
+                    <span data-feather="home"></span>
+                    Team
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:classappend="${#request.getRequestURI()} == '/teams/'+${teamId} +'/user' ? 'active' " th:href="@{/teams/}+ ${teamId} + @{/user}">
+                    <span data-feather="users"></span>
+                    팀원
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <span data-feather="file-text"></span>
+                    프로젝트
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <span data-feather="users"></span>
+                    전체일정
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <span data-feather="bar-chart-2"></span>
+                    하루한줄
+                </a>
+            </li>
+        </ul>
+
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+            <span>기록</span>
+        </h6>
+        <ul class="nav flex-column mb-2">
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <span data-feather="file-text"></span>
+                    일반게시판
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <span data-feather="file-text"></span>
+                    A 프로젝트
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <span data-feather="file-text"></span>
+                    B 프로젝트
+                </a>
+            </li>
+            <li class="nav-item sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                <span data-feather="file-text"></span>
+                종료된 프로젝트
+                <a class="link-secondary" href="#" aria-label="Add a new report">
+                    <span data-feather="plus-circle"></span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>

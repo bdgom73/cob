@@ -97,6 +97,11 @@ public class HomeController {
     }
 
 
+    @GetMapping("/template/test")
+    public String teamTest(){
+        return "common/team/teamTemplate";
+    }
+
     @Data
     class JoinMemberForm {
         @NotBlank

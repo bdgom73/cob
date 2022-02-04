@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/headerV1 :: common_headerV1(~{::title},~{::link})">
+    <title th:text="|Cob - ${team.name}|">Cob - </title>
+    <link th:href="@{/assets/css/home.css}" href="./assets/css/home.css" rel="stylesheet" type="text/css" media="all">
+</head>
+<body th:replace="~{common/team/teamTemplate :: team_template(~{::main}, ${team.teamId})}">
+<main>
+    <section style="">
+        <div class="col-md-auto p-3 " th:object="${team}" >
+            <h1  class="text-primary">
+                <i class="bi bi-box"></i>
+                <th:block th:text="*{name}"></th:block>
+            </h1>
+            <hr/>
+            <h4><i class="bi bi-person-check-fill"></i> 팀장</h4>
+            <div class="d-flex mb-3 fs-4 align-items-center">
+                <span th:text="*{leaderNickname}"></span>
+                <span class="text-muted fs-6 text-bottom">
+                    (<th:block th:text="*{leaderName}"></th:block>)
+                </span>
+            </div>
+
+            <h4><i class="bi bi-pencil-square"></i> 소개말</h4>
+            <div class="shadow p-3 mb-5 rounded bg-light" style="border : 1px solid #dddddd" th:utext="${#strings.replace(team.introduction,nlString, '&lt;br /&gt;' )}"></div>
+            <div th:if="${loginMember.memberId == team.leaderId}" style="text-align : right">
+                <button type="button" class="btn btn-warning" th:onclick="'location.href=\''+ @{/teams/} + ${team.teamId} + @{/edit} + '\''">수정</button>
+            </div>
+            <div class="text-muted text-center">
+                <span>CreateDate. </span>
+                <span th:text="${#temporals.format(team.createDate,'yyyy-MM-dd HH:mm')}"></span>
+            </div>
+
+        </div>
+    </section>
+</main>
+</body>
+</html>

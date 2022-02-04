@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/headerV1 :: common_headerV1(~{::title},~{::link})">
+    <title th:text="|Cob - ${team.name}|">Cob - </title>
+    <link th:href="@{/assets/css/home.css}" href="./assets/css/home.css" rel="stylesheet" type="text/css" media="all">
+</head>
+<body th:replace="~{common/team/teamTemplate :: team_template(~{::main}, ${team.teamId})}">
+<main>
+    <section style="">
+        <div class="col-md-auto p-3 ">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link" href="?state=OK"
+                       th:classappend="${#strings.toString(param.state) == 'OK' || #strings.toString(param.state) == '' || #strings.toString(param.state) == null} ? 'active'" >팀원</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="?state=WAITING"
+                       th:classappend="${#strings.toString(param.state) == 'WAITING'} ? 'active'"
+                      >신청</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="?state=BAN"
+                       th:classappend="${#strings.toString(param.state) == 'BAN'} ? 'active'"
+                    >밴</a>
+                </li>
+            </ul>
+            <table class="table" th:object="${joinTeams}" >
+                <tr>
+                    <th th:colspan="${#strings.toString(param.state) == 'OK' || #strings.toString(param.state) == '' || #strings.toString(param.state) == null} ? 2 : 3">팀원<th>
+                </tr>
+                <tr>
+                    <th>팀원명</th>
+                    <th>상태</th>
+                    <th >
+                        <th:block th:if="${#strings.toString(param.state) == 'OK' || #strings.toString(param.state) == '' || #strings.toString(param.state) == null}">가입일</th:block>
+                        <th:block th:if="${#strings.toString(param.state) == 'WAITING'}">신청일</th:block>
+                        <th:block th:if="${#strings.toString(param.state) == 'BAN'}">제한일</th:block>
+                    </th>
+                    <th th:if="${#strings.toString(param.state) == 'WAITING' || #strings.toString(param.state) == 'BAN'}">변경</th>
+                </tr>
+                <tr th:each=" member : ${joinTeams}" >
+                    <td th:if="${member.memberId == team.leaderId}">
+                        <span class="badge bg-primary">팀장</span>
+                        <th:block th:text="${member.memberNickname}"></th:block>
+                    </td>
+                    <td th:unless="${member.memberId == team.leaderId}">
+                        <th:block th:text="${member.memberNickname}"></th:block>
+                    </td>
+                    <td th:text="${member.joinState}"></td>
+                    <td th:text="${#temporals.format(member.joinDate,'yyyy-MM-dd HH시 mm분')}"></td>
+                    <td th:if="${#strings.toString(param.state) == 'WAITING' || #strings.toString(param.state) == 'BAN'}">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#team_state_modal">변경</button>
+                    </td>
+                    <!--  가입현황 Modal  -->
+                    <div th:replace="team/modal/teamStateModal :: team_state(${member})"></div>
+                </tr>
+
+            </table>
+        </div>
+
+    </section>
+</main>
+</body>
+</html>

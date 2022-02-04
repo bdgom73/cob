@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/headerV1 :: common_headerV1(~{::title},~{::link})">
+    <title th:text="|Cob - ${team.name} 정보 수정|">Cob - 팀 수정</title>
+    <link th:href="@{/assets/css/home.css}" href="./assets/css/home.css" rel="stylesheet" type="text/css" media="all">
+</head>
+<body th:replace="~{common/team/teamTemplate :: team_template(~{::main}, ${teamId})}">
+    <main>
+        <section>
+            <h2 class="mt-3">
+                <span th:text="${team.name}" class="text-primary"></span> 정보변경
+            </h2>
+            <hr>
+            <div class=" mt-3 p-3 shadow rounded bg-body" style="margin : 0 auto; max-width : 600px">
+                <form th:action="@{/teams/} + ${teamId} + @{/edit}" method="post" th:object="${team}" style="margin: 0 auto">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">팀명</label>
+                        <input type="text" class="form-control" id="name" th:field="*{name}" placeholder="Team name">
+                        <div th:error="${team}"/>
+                    </div>
+                    <div class="form-floating mb-3 mt-3">
+                        <textarea style="min-height : 250px" class="form-control" th:field="*{introduction}" id="floatingIntroduceTextarea"></textarea>
+                        <label for="floatingIntroduceTextarea">소개말을 입력 해주세요</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">변경</button>
+                </form>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

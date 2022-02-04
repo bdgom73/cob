@@ -6,48 +6,60 @@
 </head>
 <body th:replace="common/basicLayout :: basic_body(~{::main})">
     <main>
-        <section style="margin-top : 5rem" class="p-5">
-            
-                <div th:if="${#lists.size(teams) <= 0}">
-                    <div class="d-flex justify-content-center">
-                        <div class="row">
-                            <div class="col">
-                                <h3>팀이 없습니다. 팀을 만들어주세요!</h3>
-                                <button type="button" class="btn btn-primary">팀 만들기</button>
-                            </div>
-                            <div class="col mt-3 mb-3" style="min-width : 320px">
-                                <img src="assets/images/teamsBack.jpg"
-                                    class="rounded img-fluid" alt="team create plz"/>
-                            </div>
+        <section class="p-5">
+            <div class="d-flex justify-content-end">
+                <a th:href="@{/teams/create}" class="btn btn-success">팀 만들기</a>
+            </div>
+            <hr>
+            <div th:if="${#lists.size(teams) <= 0}">
+                <div class="d-flex justify-content-center">
+                    <div class="row">
+                        <div class="col">
+                            <h3>팀이 없습니다. 팀을 만들어주세요!</h3>
+                            <button type="button" class="btn btn-primary">팀 만들기</button>
+                        </div>
+                        <div class="col mt-3 mb-3" style="min-width : 320px">
+                            <img src="assets/images/teamsBack.jpg"
+                                class="rounded img-fluid" alt="team create plz"/>
                         </div>
                     </div>
-                </div>   
-                <div th:unless="${#lists.size(teams) <= 0}">
-                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                        <div class="col" th:each="team : ${teams}" >
-                            <div class="card shadow-sm" >
-                                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false">
-                                    <title>Placeholder</title>
-                                    <rect width="100%" height="100%" fill="#55595c"/>
-                                    <text x="50%" y="50%" fill="#eceeef" dy=".3em" th:text="${team.name}">Thumbnail</text>
-                                </svg>
-                                <div class="card-body">
-                                    <h5 class="card-title" >
-                                        <a class="link" th:href="@{/teams/{param1}(param1=${team.id})}" th:text="${team.name}"></a>
-                                    </h5>
-                                    <p class="card-text text-truncate" th:text="${team.introduction}">Team introduction</p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-primary btn-sm">가입신청</button>
-                                        </div>
-                                        <small class="text-muted" th:text="${#temporals.format(team.createDate,'yyyy-MM-dd HH시 mm분')}"></small>
+                </div>
+            </div>
+            <div th:unless="${#lists.size(teams) <= 0}">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                    <div class="col" th:each="team : ${teams}" >
+                        <div class="card shadow-sm" >
+                            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false">
+                                <title>Placeholder</title>
+                                <rect width="100%" height="100%" fill="#55595c"/>
+                                <text x="50%" y="50%" fill="#eceeef" dy=".3em" th:text="${team.name}">Thumbnail</text>
+                            </svg>
+                            <div class="card-body">
+                                <h5 class="card-title" >
+                                    <a class="link" th:href="@{/teams/{param1}(param1=${team.teamId})}" th:text="${team.name}"></a>
+                                </h5>
+                                <p class="card-text text-truncate" th:text="${team.introduction}">Team introduction</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-primary btn-sm">가입신청</button>
                                     </div>
+                                    <small class="text-muted" th:text="${#temporals.format(team.createDate,'yyyy-MM-dd HH시 mm분')}"></small>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>      
+                </div>
+            </div>
         </section>
+        <script th:inline="javascript">
+            document.addEventListener("DOMContentLoaded",()=>{
+                let resultMsg = '[(${resultMsg})]';
+                if(resultMsg){
+                    alert(resultMsg);
+                }
+            });
+        </script>
     </main>
+
 </body>
 </html>

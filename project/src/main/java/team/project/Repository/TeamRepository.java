@@ -4,9 +4,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import team.project.Entity.Team;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TeamRepository extends JpaRepository<Team,Long> {
 
@@ -15,4 +17,7 @@ public interface TeamRepository extends JpaRepository<Team,Long> {
 
     @Query("SELECT t FROM Team t JOIN FETCH t.member m ")
     List<Team> findByAllJoinMember(Pageable pageable);
+
+    @Query("SELECT t FROM Team t JOIN FETCH t.member m WHERE t.id = :teamId")
+    Optional<Team> findMemberById(@Param("teamId") Long teamId );
 }

@@ -1,6 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<div class="modal fade" th:fragment="join_team(team)" id="join_members_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="join_members_label" aria-hidden="true">
+<div class="modal fade" th:fragment="join_team(joinTeams,team)" id="join_members_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="join_members_label" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -15,7 +15,7 @@
                         <th>신청/가입일</th>
                         <th></th>
                     </tr>
-                    <tr th:object="${member}" th:each="member : ${team.getJoinMembers()}">
+                    <tr th:object="${member}" th:each="member : ${joinTeams}">
                         <td>
                             <div th:text="*{memberName}"></div>
                             <div th:text="|(*{memberNickname})|"></div>
@@ -51,6 +51,7 @@
                             <button th:if="${member.memberId != team.leaderId}" class="btn btn-warning" type="button" th:onclick="| changeState(${team.teamId},${member.memberId}) |">변경</button>
                         </td>
                     </tr>
+
                 </table>
             </div>
             <div class="modal-footer">

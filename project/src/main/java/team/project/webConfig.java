@@ -7,6 +7,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import team.project.Service.ArgumentResolver.LoginCheckArgumentResolver;
 import team.project.Service.Interceptor.LoginCheckInterceptor;
+import team.project.Service.Interceptor.TeamsUserCheckInterceptor;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class webConfig implements WebMvcConfigurer {
 
     private final LoginCheckArgumentResolver loginCheckArgumentResolver;
     private final LoginCheckInterceptor loginCheckInterceptor;
+    private final TeamsUserCheckInterceptor teamsUserCheckInterceptor;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
@@ -24,9 +26,13 @@ public class webConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(loginCheckInterceptor)
+        registry.addInterceptor(teamsUserCheckInterceptor)
                 .order(1)
+                .addPathPatterns("/teams/**")
+                .excludePathPatterns("/teams");
+        registry.addInterceptor(loginCheckInterceptor)
+                .order(2)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/assets/**", "/*.ico", "/error","/api");
+                .excludePathPatterns("/assets/**", "/*.ico", "/error");
     }
 }
