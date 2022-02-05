@@ -4,7 +4,7 @@
     <title th:text="|Cob - ${team.name}|">Cob - </title>
     <link th:href="@{/assets/css/home.css}" href="./assets/css/home.css" rel="stylesheet" type="text/css" media="all">
 </head>
-<body th:replace="~{common/team/teamTemplate :: team_template(~{::main}, ${team.teamId})}">
+<body th:replace="~{common/team/teamTemplate :: team_template(~{::main}, ${teamId})}">
 <main>
     <section style="">
         <div class="col-md-auto p-3 " th:object="${team}" >

@@ -31,10 +31,6 @@ public class Project {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
-    private List<ProjectMember> projectMembers = new ArrayList<>();
-
-
     protected Project(){}
 
     public Project(String title,LocalDateTime startDate, LocalDateTime endDate) {

@@ -34,7 +34,6 @@ public class ProjectMember {
 
     public static ProjectMember createProject(String role, Member member, Project project){
         ProjectMember projectMember = new ProjectMember(role, member, project);
-        project.getProjectMembers().add(projectMember);
         return projectMember;
     }
 }

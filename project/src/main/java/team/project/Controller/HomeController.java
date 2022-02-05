@@ -1,8 +1,6 @@
 package team.project.Controller;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import team.project.Dto.JoinMemberDto;
 import team.project.Service.MemberService;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.constraints.Email;
@@ -96,11 +93,6 @@ public class HomeController {
         return "redirect:/login";
     }
 
-
-    @GetMapping("/template/test")
-    public String teamTest(){
-        return "common/team/teamTemplate";
-    }
 
     @Data
     class JoinMemberForm {

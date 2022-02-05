@@ -12,9 +12,15 @@ import java.util.Optional;
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     @Query("SELECT p FROM Project p JOIN FETCH p.member m WHERE p.team.id = :teamId")
-    List<Project> findAllByTeam(@Param("teamId") Long teamId);
+    List<Project> findMemberAllByTeam(@Param("teamId") Long teamId);
 
     @Query("SELECT p FROM Project p JOIN FETCH p.member m WHERE p.team.id = :teamId")
+    List<Project> findMemberAllByTeam(@Param("teamId") Long teamId, Pageable pageable);
+
+    @Query("SELECT p FROM Project p JOIN FETCH p.member m JOIN FETCH p.team t WHERE p.team.id = :teamId")
+    List<Project> findAllByTeam(@Param("teamId") Long teamId);
+
+    @Query("SELECT p FROM Project p JOIN FETCH p.member m JOIN FETCH p.team t WHERE p.team.id = :teamId")
     List<Project> findAllByTeam(@Param("teamId") Long teamId, Pageable pageable);
 
     @Query("SELECT p FROM Project p JOIN FETCH p.member m WHERE p.id = :projectId")

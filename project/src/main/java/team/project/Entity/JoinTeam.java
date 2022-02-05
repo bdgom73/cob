@@ -20,6 +20,8 @@ public class JoinTeam {
 
     private TeamRole teamRole;
 
+    private DeveloperRole developerRole;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -45,6 +47,11 @@ public class JoinTeam {
         joinDate = LocalDateTime.now();
     }
 
+
+    public void changeDeveloperRole(DeveloperRole role){
+        developerRole = role;
+    }
+
     public void changeRole(TeamRole role){
         teamRole = role;
     }
@@ -53,6 +60,7 @@ public class JoinTeam {
         JoinTeam joinTeam = new JoinTeam();
         joinTeam.apply(team, member);
         joinTeam.changeRole(TeamRole.APPLICANT);
+        joinTeam.changeDeveloperRole(DeveloperRole.None);
         return joinTeam;
     }
 }

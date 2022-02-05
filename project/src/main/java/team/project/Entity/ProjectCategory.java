@@ -23,6 +23,5 @@ public class ProjectCategory {
 
     public void setTeam(Team team){
         this.team = team;
-        team.setProjectCategory(this);
     }
 }

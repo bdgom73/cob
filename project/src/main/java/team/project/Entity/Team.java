@@ -26,8 +26,8 @@ public class Team extends BaseEntity{
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
     private List<JoinTeam> joinTeams = new ArrayList<>();
 
-    @OneToOne(mappedBy = "team", cascade = CascadeType.ALL)
-    private ProjectCategory projectCategory;
+//    @OneToOne(mappedBy = "team", cascade = CascadeType.ALL)
+//    private ProjectCategory projectCategory;
 
     protected Team(){
 
@@ -41,9 +41,9 @@ public class Team extends BaseEntity{
     public void setMember(Member member){
         this.member = member;
     }
-    public void setProjectCategory(ProjectCategory category){
-        projectCategory = category;
-    }
+//    public void setProjectCategory(ProjectCategory category){
+//        projectCategory = category;
+//    }
 
     public void changeTeam(String name, String introduction){
         this.name = name;

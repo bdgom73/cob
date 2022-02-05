@@ -5,13 +5,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import team.project.Entity.JoinState;
-import team.project.Entity.JoinTeam;
-import team.project.Entity.Member;
-import team.project.Entity.Team;
+import team.project.Entity.*;
 import team.project.Repository.JoinTeamRepository;
+import team.project.Repository.MemberRepository;
 import team.project.Repository.TeamRepository;
 
 import java.util.List;
@@ -24,13 +23,15 @@ import java.util.stream.Stream;
 public class TeamService {
 
     private final TeamRepository teamRepository;
-    private final MemberService memberService;
+    private final MemberRepository memberRepository;
     private final JoinTeamRepository joinTeamRepository;
     private final JoinTeamService joinTeamService;
 
     @Transactional
     public Long createTeam(String teamName, String introduction, Long memberId){
-        Member member = memberService.findById(memberId);
+        Member member = memberRepository.findById(memberId).orElseThrow(()->{
+            throw new UsernameNotFoundException("존재하지 않는 유저입니다");
+        });
         Team team = Team.createTeam(teamName, introduction, member);
         teamRepository.save(team);
         return team.getId();
@@ -39,7 +40,9 @@ public class TeamService {
     @Transactional
     public Long applyTeam(Long teamId, Long memberId){
         Team team = findById(teamId);
-        Member member = memberService.findById(memberId);
+        Member member = memberRepository.findById(memberId).orElseThrow(()->{
+            throw new UsernameNotFoundException("존재하지 않는 유저입니다");
+        });
         JoinTeam joinTeam = JoinTeam.applyTeam(team, member);
         joinTeamRepository.save(joinTeam);
         return team.getId();
@@ -80,6 +83,12 @@ public class TeamService {
         }
         joinTeam.changeState(state);
         return joinTeam;
+    }
+
+    @Transactional
+    public void changeDeveloperRole(Long teamId, Long memberId, DeveloperRole role){
+        JoinTeam joinTeam = joinTeamService.findByMemberInTeam(memberId, teamId);
+        joinTeam.changeDeveloperRole(role);
     }
 
     public Team findById(Long teamId){

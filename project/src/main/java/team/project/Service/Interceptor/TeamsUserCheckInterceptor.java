@@ -6,26 +6,28 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.*;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import team.project.CommonConst;
-import team.project.Entity.JoinState;
-import team.project.Entity.JoinTeam;
+import team.project.Dto.LoginMemberDto;
+import team.project.Entity.*;
+import team.project.Repository.MemberRepository;
 import team.project.Repository.TeamRepository;
 import team.project.Service.JoinTeamService;
+import team.project.Service.ProjectService;
 import team.project.Service.TeamService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class TeamsUserCheckInterceptor implements HandlerInterceptor {
 
-    private final TeamService teamService;
     private final JoinTeamService joinTeamService;
+    private final ProjectService projectService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -43,10 +45,12 @@ public class TeamsUserCheckInterceptor implements HandlerInterceptor {
 
         String teamId = (String) pathVariables.get("teamId");
         log.info("teamId = {}",teamId);
+        request.setAttribute("teamId", teamId);
         if(teamId != null){
             try{
                 JoinTeam joinTeam = joinTeamService.findMemberAndTeamByMemberInTeam(uid, Long.parseLong(teamId));
                 log.info("Check the team's authority [{}]", requestURI);
+                request.setAttribute("postMember", joinTeam.getMember());
                 if(!joinTeam.getJoinState().equals(JoinState.OK)){
                     throw new IllegalStateException();
                 }
@@ -62,6 +66,34 @@ public class TeamsUserCheckInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        String teamId = (String) request.getAttribute("teamId");
+        if(teamId != null){
+            List<Project> projects = projectService.findAllByTeam(Long.parseLong(teamId));
+            List<Map<String , Object>> projectNavList = new ArrayList<>();
+            List<Map<String , Object>> endProjectNavList = new ArrayList<>();
+            projects.stream().forEach(p->{
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("projectId", p.getId());
+                resultMap.put("projectName" , p.getTitle());
+                if(!p.getProgress().equals(Progress.Maintenance)){
+                    projectNavList.add(resultMap);
+                }else{
+                    endProjectNavList.add(resultMap);
+                }
+            });
+
+            modelAndView.addObject("projectNav", projectNavList);
+            modelAndView.addObject("endProjectNav", endProjectNavList);
+        }
+        HttpSession session = request.getSession(true);
+        Member postMember = (Member) request.getAttribute("postMember");
+        if(postMember != null){
+            LoginMemberDto memberDto = new LoginMemberDto(postMember.getId(), postMember.getEmail(), postMember.getName(), postMember.getNickname());
+            modelAndView.addObject("loginMember", memberDto);
+        }else{
+            session.invalidate();
+            modelAndView.addObject("loginMember", new LoginMemberDto());
+        }
 
     }
 

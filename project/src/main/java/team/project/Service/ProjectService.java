@@ -17,7 +17,6 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final TeamService teamService;
-    private final MemberService memberService;
     private final JoinTeamService joinTeamService;
     private final ProjectMemberRepository projectMemberRepository;
 

@@ -4,38 +4,33 @@
     <title>Cob - 팀 프로젝트</title>
     <link th:href="@{/assets/css/home.css}" href="./assets/css/home.css" rel="stylesheet" type="text/css" media="all">
 </head>
-<body th:replace="common/basicLayout :: basic_body(~{::main})">
+<body th:replace="~{common/team/teamTemplate :: team_template(~{::main}, ${teamId})}">
 <main>
     <section style="margin-top : 5rem" class="p-5">
-
         <div th:if="${#lists.size(projects) <= 0}">
             <div class="d-flex justify-content-center">
                 <div class="row">
                     <div class="col">
                         <h3>프로젝트가 없습니다. 프로젝트를 만들어주세요!</h3>
-                        <button type="button" class="btn btn-primary">프로젝트 만들기</button>
-                    </div>
-                    <div class="col mt-3 mb-3" style="min-width : 320px">
-                        <img src="assets/images/teamsBack.jpg"
-                             class="rounded img-fluid" alt="team create plz"/>
+                        <a th:href="@{/teams/} + ${teamId} + @{/projects/create}" class="btn btn-primary">프로젝트 만들기</a>
                     </div>
                 </div>
             </div>
         </div>
         <div th:unless="${#lists.size(projects) <= 0}">
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                <div class="col" th:each="projects : ${projects}" >
-                    <div class="card shadow-sm" >
+                <div class="col" th:each="project : ${projects}" th:object="${project}">
+                    <div class="card shadow-sm w-100" >
                         <div class="card-body">
                             <h5 class="card-title" >
-                                <a class="link" th:href="@{/teams/{param1}(param1=${team.teamId})}" th:text="${team.name}"></a>
+                                <a class="link" th:text="*{title}"></a>
+                                <span th:text="*{projectProgress}"></span>
                             </h5>
-                            <p class="card-text text-truncate" th:text="${team.introduction}">Team introduction</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-primary btn-sm">가입신청</button>
-                                </div>
-                                <small class="text-muted" th:text="${#temporals.format(team.createDate,'yyyy-MM-dd HH시 mm분')}"></small>
+                            <p class="card-text text-truncate" th:text="*{projectIntroduction}">Team introduction</p>
+                            <div>
+                                <span class="text-muted" th:text="${#temporals.format(project.projectStartDate,'yyyy-MM-dd HH시 mm분')}"></span>
+                                ~
+                                <span class="text-muted" th:text="${#temporals.format(project.projectEndDate,'yyyy-MM-dd HH시 mm분')}"></span>
                             </div>
                         </div>
                     </div>

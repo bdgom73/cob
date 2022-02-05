@@ -2,6 +2,7 @@ package team.project.Controller.Team;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.mapping.Join;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,15 +47,7 @@ public class TeamController {
     }
 
     @GetMapping("/teams/{teamId}")
-    public String teamView(@PathVariable("teamId") Long teamId, Model model, @Login Long memberId, RedirectAttributes redirectAttributes){
-        JoinTeam joinTeam;
-        try{
-            joinTeam = joinTeamService.findMemberAndTeamByMemberInTeam(memberId, teamId);
-            if (joinTeam.getJoinState() != JoinState.OK) throw new IllegalStateException();
-        }catch (IllegalStateException e){
-            redirectAttributes.addFlashAttribute("resultMsg", "팀 접근 권한이 없습니다");
-            return "redirect:/teams";
-        }
+    public String teamView(Model model,@RequestAttribute("checkJoinTeam") JoinTeam joinTeam){
         Team team = joinTeam.getTeam();
         Member member = team.getMember();
         TeamsResponse teamsResponse = new TeamsResponse(
@@ -114,10 +107,10 @@ public class TeamController {
     @GetMapping("/teams/{teamId}/user")
     public String userInTeam(
             Model model,
-            @Login Long memberId, @PathVariable("teamId") Long teamId,
+            @PathVariable("teamId") Long teamId,
             RedirectAttributes redirectAttributes,
             @RequestParam(value = "state", defaultValue = "OK") String state,
-            @RequestAttribute("checkJoinTeam") JoinTeam joinTeam
+            @RequestAttribute(CommonConst.CheckJoinTeam) JoinTeam joinTeam
     ){
         try{
             List<JoinMemberResponse> resultList;
@@ -145,15 +138,20 @@ public class TeamController {
 
     @PostMapping("/teams/{teamId}/state")
     @ResponseBody
-    public void changeState(@PathVariable("teamId") Long teamId, @Login Long memberId,
-                            @RequestParam("state") String state, @RequestParam("memberId") Long joinMemberId){
-        String s = state.toUpperCase();
-        if(s.equals("OK") || s.equals("WAITING") || s.equals("BAN")) {
-            teamService.changeState(teamId,joinMemberId,JoinState.valueOf(s));
-        }else if(s.equals("REJECT")){
-            teamService.doReject(teamId,joinMemberId);
-        }else{
-            throw new IllegalStateException("상태변경에 실패했습니다");
+    public void changeState(
+            @PathVariable("teamId") Long teamId,
+            @Login Long memberId,
+            @RequestAttribute("checkJoinTeam") JoinTeam joinTeam,
+            @RequestParam("state") String state,
+            @RequestParam("memberId") Long joinMemberId
+    ){
+        if(joinTeam.getTeam().getMember().getId().equals(memberId)){
+            String s = state.toUpperCase();
+            if(s.equals("OK") || s.equals("WAITING") || s.equals("BAN")) {
+                teamService.changeState(teamId,joinMemberId,JoinState.valueOf(s));
+            }else if(s.equals("REJECT")){
+                teamService.doReject(teamId,joinMemberId);
+            }
         }
     }
 
