@@ -56,10 +56,7 @@ public class HomeController {
                 return "redirect:"+ redirectURI;
             }
             return "redirect:/";
-        }catch (IllegalStateException e){
-            bindingResult.reject("loginFail", e.getMessage());
-            return "home/loginForm";
-        }catch (UsernameNotFoundException e){
+        }catch (IllegalStateException | UsernameNotFoundException | IllegalArgumentException e){
             bindingResult.reject("loginFail", e.getMessage());
             return "home/loginForm";
         }

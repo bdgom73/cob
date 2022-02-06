@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.*;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import team.project.CommonConst;
+import team.project.Controller.Form.TeamForm.TeamsResponse;
 import team.project.Dto.LoginMemberDto;
 import team.project.Entity.*;
 import team.project.Repository.MemberRepository;
@@ -50,7 +51,7 @@ public class TeamsUserCheckInterceptor implements HandlerInterceptor {
             try{
                 JoinTeam joinTeam = joinTeamService.findMemberAndTeamByMemberInTeam(uid, Long.parseLong(teamId));
                 log.info("Check the team's authority [{}]", requestURI);
-                request.setAttribute("postMember", joinTeam.getMember());
+                request.setAttribute("postJoinTeam", joinTeam);
                 if(!joinTeam.getJoinState().equals(JoinState.OK)){
                     throw new IllegalStateException();
                 }
@@ -85,22 +86,35 @@ public class TeamsUserCheckInterceptor implements HandlerInterceptor {
             modelAndView.addObject("projectNav", projectNavList);
             modelAndView.addObject("endProjectNav", endProjectNavList);
         }
-        HttpSession session = request.getSession(true);
-        Member postMember = (Member) request.getAttribute("postMember");
-        if(postMember != null){
-            LoginMemberDto memberDto = new LoginMemberDto(postMember.getId(), postMember.getEmail(), postMember.getName(), postMember.getNickname());
-            modelAndView.addObject("loginMember", memberDto);
-        }else{
-            session.invalidate();
-            modelAndView.addObject("loginMember", new LoginMemberDto());
+        JoinTeam joinTeam = (JoinTeam) request.getAttribute("postJoinTeam");
+
+        if(joinTeam != null){
+            Member postMember = joinTeam.getMember();
+            Team postTeam = joinTeam.getTeam();
+            if(postTeam != null){
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("id",postTeam.getMember().getId());
+                modelAndView.addObject("teamLeader", resultMap);
+            }
+            if(postMember != null){
+                LoginMemberDto memberDto = new LoginMemberDto(postMember.getId(), postMember.getEmail(), postMember.getName(), postMember.getNickname());
+                modelAndView.addObject("loginMember", memberDto);
+            }else{
+                modelAndView.addObject("loginMember", new LoginMemberDto());
+            }
         }
+
 
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-
+        if(ex != null){
+            response.sendRedirect("/teams");
+        }
     }
+
+
 
     private boolean responseFlashMessage(HttpServletRequest request, HttpServletResponse response, FlashMapManager fm, FlashMap flashMap, String message, String redirectURI) throws IOException {
         flashMap.put("resultMsg", message);

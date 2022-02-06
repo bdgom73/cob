@@ -56,6 +56,12 @@ public class Project {
     public void setProgress(Progress progress){
         this.progress = progress;
     }
+    public void changeProject(String title, String introduction, LocalDateTime startDate, LocalDateTime endDate){
+       this.title = title;
+       this.introduction = introduction;
+       this.startDate = startDate;
+       this.endDate = endDate;
+    }
     public static Project create(String title, String introduction , LocalDateTime startDate, LocalDateTime endDate, Team team, Member member){
         Project project = new Project(title,introduction,startDate,endDate);
         project.setTeam(team);

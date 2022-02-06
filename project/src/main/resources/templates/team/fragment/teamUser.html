@@ -46,7 +46,7 @@
                     <td th:unless="${member.memberId == team.leaderId}">
                         <th:block th:text="${member.memberNickname}"></th:block>
                     </td>
-                    <td th:text="${member.joinState}"></td>
+                    <td th:text="${member.joinState.getState()}"></td>
                     <td th:text="${#temporals.format(member.joinDate,'yyyy-MM-dd HH시 mm분')}"></td>
                     <td th:if="${#strings.toString(param.state) == 'WAITING' || #strings.toString(param.state) == 'BAN'}">
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#team_state_modal">변경</button>

@@ -26,7 +26,7 @@ public class MemberService {
         });
         checkedPassword(memberDto.getPassword1(), memberDto.getPassword2());
         Member member = new Member(
-                memberDto.getEmail(), memberDto.getPassword1(), memberDto.getName(), memberDto.getNickname(), RoleType.USER
+                memberDto.getEmail(), passwordEncoder.encode(memberDto.getPassword1()), memberDto.getName(), memberDto.getNickname(), RoleType.USER
         );
         memberRepository.save(member);
         return member.getId();

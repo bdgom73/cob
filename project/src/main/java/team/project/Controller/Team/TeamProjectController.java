@@ -14,8 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import team.project.Controller.Form.ProjectTeamForm.ProjectResponse;
 import team.project.Dto.CreateProjectDto;
-import team.project.Entity.Member;
-import team.project.Entity.Project;
+import team.project.Entity.*;
 import team.project.Repository.JoinTeamRepository;
 import team.project.Repository.TeamRepository;
 import team.project.Service.ArgumentResolver.Login;
@@ -26,6 +25,7 @@ import team.project.Service.TeamService;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Controller
@@ -33,10 +33,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TeamProjectController {
 
-    private final TeamService teamService;
-    private final JoinTeamService joinTeamService;
-    private final JoinTeamRepository joinTeamRepository;
-    private final TeamRepository teamRepository;
     private final ProjectService projectService;
 
     @GetMapping("/teams/{teamId}/projects")
@@ -46,7 +42,6 @@ public class TeamProjectController {
             return new ProjectResponse(p.getId(), p.getTitle(), p.getIntroduction(), p.getStartDate(), p.getEndDate(), p.getProgress(),
                     member.getId(), member.getName(), member.getNickname());
         }).collect(Collectors.toList());
-
         model.addAttribute("projects", resultList);
         return "project/projectHome";
     }
@@ -58,13 +53,56 @@ public class TeamProjectController {
     }
 
     @PostMapping("/teams/{teamId}/projects/create")
-    public String createTeamProjectForm(@PathVariable("teamId") Long teamId, @Login Long memberId, @ModelAttribute("project") ProjectForm form, BindingResult bindingResult, RedirectAttributes redirectAttributes){
+    public String createTeamProjectForm(@PathVariable("teamId") Long teamId, @Login Long memberId, @ModelAttribute("project") ProjectForm form, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
-            return "redirect:/team/"+teamId+"/projects/create";
+            log.info("bindingResult {}", bindingResult);
+            return "redirect:/teams/"+teamId+"/projects/create";
         }
         Long projectId = projectService.createProject(memberId, new CreateProjectDto(form.getTitle(), form.getIntroduction(), form.getStartDate(), form.getEndDate(), teamId));
-        redirectAttributes.addAttribute("projectId", projectId);
-        return "redirect:/teams/"+teamId+"/projects/"+projectId;
+        return "redirect:/teams/"+teamId+"/projects";
+    }
+
+    @GetMapping("/teams/{teamId}/projects/{projectId}")
+    public String teamProject(@PathVariable("teamId") Long teamId, @PathVariable("projectId") Long projectId, Model model){
+        Project project = projectService.findTeamAndMemberById(projectId);
+        ProjectResponse projectResponse = new ProjectResponse(project.getId(), project.getTitle(), project.getIntroduction(), project.getStartDate(), project.getEndDate(), project.getProgress(), project.getMember().getId(), project.getMember().getName(), project.getMember().getNickname());
+        model.addAttribute("project", projectResponse);
+        model.addAttribute("nlString", System.getProperty("line.separator"));
+        return "project/project";
+    }
+
+    @GetMapping("/teams/{teamId}/projects/{projectId}/edit")
+    public String editTeamProjectForm(@PathVariable("projectId") Long projectId, Model model){
+        Project project = projectService.findTeamAndMemberById(projectId);
+        ProjectForm projectForm = new ProjectForm();
+        projectForm.setTitle(project.getTitle());
+        projectForm.setIntroduction(project.getIntroduction());
+        projectForm.setStartDate(project.getStartDate());
+        projectForm.setEndDate(project.getEndDate());
+        model.addAttribute("project", projectForm);
+        return "project/editProjectForm";
+    }
+
+    @PostMapping("/teams/{teamId}/projects/{projectId}/edit")
+    public String editTeamProjectForm(
+            @Validated @ModelAttribute("project") ProjectForm form, BindingResult bindingResult,
+            @PathVariable("projectId") Long projectId  , @PathVariable("teamId") Long teamId,
+            @RequestAttribute("checkJoinTeam") JoinTeam joinTeam,
+            @SessionAttribute(name = "UID",required = false) Long memberId
+    ){
+        if(bindingResult.hasErrors()){
+            log.info("bindingResult {}", bindingResult);
+            return "redirect:/teams/"+teamId+"/projects/"+projectId+"/edit";
+        }
+
+        Project project = projectService.findMemberById(projectId);
+
+        if(Objects.equals(joinTeam.getTeam().getMember().getId(), memberId) || Objects.equals(project.getMember().getId(), memberId)){
+            projectService.changeProject(project, form.getTitle(), form.getIntroduction(), form.getStartDate(), form.getEndDate());
+            return "redirect:/teams/"+teamId+"/projects/"+projectId;
+        }
+
+        return "redirect:/teams/"+teamId+"/projects/"+projectId+"/edit";
     }
 
     @Data
@@ -72,10 +110,11 @@ public class TeamProjectController {
         @NotBlank
         private String title;
         private String introduction;
-        @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm")
+        @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:ss")
         private LocalDateTime startDate;
-        @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm")
+        @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:ss")
         private LocalDateTime endDate;
+
     }
 
 }

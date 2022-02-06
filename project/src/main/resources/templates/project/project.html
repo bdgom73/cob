@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/headerV1 :: common_headerV1(~{::title},~{::link})">
+    <title>Cob - 팀 프로젝트</title>
+    <link th:href="@{/assets/css/home.css}" href="./assets/css/home.css" rel="stylesheet" type="text/css" media="all">
+</head>
+<body th:replace="~{common/team/teamTemplate :: team_template(~{::main}, ${teamId})}">
+<main>
+    <section class="p-5">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            <div class="col w-100" th:object="${project}">
+                <div class="mb-3" style="min-width:200px" >
+                    <h2>
+                        <span class="text-muted fs-6">ProjectName.</span>
+                        <span class="text-primary" th:text="*{projectTitle}"></span>
+                    </h2>
+                    <hr>
+                    <div class="text-muted fs-6">Project Introduction.</div>
+                    <div class="shadow p-3 mb-2 rounded bg-light" style="border : 1px solid #dddddd" th:utext="${#strings.replace(project.projectIntroduction,nlString, '&lt;br /&gt;' )}"></div>
+                    <div class="text-muted fs-6">Period.</div>
+                    <div style="font-size : 20px">
+                        <span class="badge bg-secondary" th:text="${#temporals.format(project.projectStartDate,'yyyy-MM-dd HH시 mm분')}"></span>
+                        ~
+                        <span class="badge bg-secondary" th:text="${#temporals.format(project.projectEndDate,'yyyy-MM-dd HH시 mm분')}"></span>
+                    </div>
+                    <div class="text-muted fs-6 mt-3">Project Leader.</div>
+                    <div>
+                        <i class="bi bi-person-square"></i>
+                        <span class="fw-bold text-success" th:text="*{memberNickname}"/>
+                        <small th:text="|(*{memberName})|"/>
+                    </div>
+                    <div class="text-muted fs-6 mt-3">Project Progress. <span class="text-primary fw-bold" th:text="*{projectProgress.getExplain()}"></span></div>
+                    <div class="progress" style="height: 50px;">
+                        <div class="progress-bar progress-bar-striped" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+                             th:style="${#strings.toString(project.projectProgress) == 'Requirements_Analysis' ? 'width : 20%' :
+                                     #strings.toString(project.projectProgress) == 'Design' ? 'width : 40%' :
+                                     #strings.toString(project.projectProgress) == 'Programming' ? 'width : 60%' :
+                                     #strings.toString(project.projectProgress) == 'Testing' ? 'width : 80%' : 'width : 100%'}">
+                            <th:block th:text="${project.projectProgress.getExplain()}"></th:block>
+                        </div>
+                    </div>
+                    <div class="mt-3" th:if="${project.memberId == loginMember.memberId || teamLeader.id == loginMember.memberId}">
+                        <a th:href="@{/teams/} + ${teamId} + @{/projects/} + ${project.projectId} + @{/edit}" class="btn btn-success link">수정</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script th:inline="javascript">
+        document.addEventListener("DOMContentLoaded",()=>{
+            let resultMsg = '[(${resultMsg})]';
+            if(resultMsg){
+                alert(resultMsg);
+            }
+        });
+    </script>
+</main>
+
+</body>
+</html>

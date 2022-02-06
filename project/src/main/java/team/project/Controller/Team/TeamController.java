@@ -82,7 +82,7 @@ public class TeamController {
     @GetMapping("/teams/{teamId}/edit")
     public String editTeamForm(@Login Long memberId, @PathVariable("teamId") Long teamId, Model model){
         Team team = teamService.findById(teamId);
-        JoinTeam joinTeam = joinTeamService.findMemberByMemberInTeam(memberId, teamId);
+//        JoinTeam joinTeam = joinTeamService.findMemberByMemberInTeam(memberId, teamId);
         if(!team.getMember().getId().equals(memberId)){
             return "redirect:/teams/"+ teamId;
         }

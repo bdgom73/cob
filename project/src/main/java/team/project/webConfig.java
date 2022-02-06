@@ -3,11 +3,14 @@ package team.project;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import team.project.Converter.DateTimeLocalStringToLocalDateTimeConverter;
 import team.project.Service.ArgumentResolver.LoginCheckArgumentResolver;
 import team.project.Service.Interceptor.LoginCheckInterceptor;
 import team.project.Service.Interceptor.TeamsUserCheckInterceptor;
@@ -22,6 +25,7 @@ public class webConfig implements WebMvcConfigurer {
     private final LoginCheckArgumentResolver loginCheckArgumentResolver;
     private final LoginCheckInterceptor loginCheckInterceptor;
     private final TeamsUserCheckInterceptor teamsUserCheckInterceptor;
+    private final DateTimeLocalStringToLocalDateTimeConverter dateTimeLocalStringToLocalDateTimeConverter;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
@@ -37,6 +41,11 @@ public class webConfig implements WebMvcConfigurer {
         registry.addInterceptor(loginCheckInterceptor)
                 .order(2)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/assets/**", "/*.ico", "/error","/teams/**");
+                .excludePathPatterns("/assets/**", "/*.ico", "/error","/teams/*/**");
+    }
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(dateTimeLocalStringToLocalDateTimeConverter);
     }
 }

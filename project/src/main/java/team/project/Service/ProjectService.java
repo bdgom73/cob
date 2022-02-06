@@ -1,6 +1,7 @@
 package team.project.Service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.project.Dto.CreateProjectDto;
@@ -8,11 +9,13 @@ import team.project.Entity.*;
 import team.project.Repository.ProjectMemberRepository;
 import team.project.Repository.ProjectRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
@@ -43,6 +46,19 @@ public class ProjectService {
     public void changeProgress(Long projectId, Progress progress){
         Project project = findById(projectId);
         project.setProgress(progress);
+    }
+
+    @Transactional
+    public Project changeProject(Long projectId , String title, String introduction, LocalDateTime startDate, LocalDateTime endDate){
+        Project project = findMemberById(projectId);
+        project.changeProject(title,introduction,startDate,endDate);
+        return project;
+    }
+
+    @Transactional
+    public Project changeProject(Project project , String title, String introduction, LocalDateTime startDate, LocalDateTime endDate){
+        project.changeProject(title,introduction,startDate,endDate);
+        return project;
     }
 
     @Transactional
@@ -80,6 +96,12 @@ public class ProjectService {
 
     public Project findMemberById(Long id){
         return projectRepository.findMemberById(id).orElseThrow(()->{
+            throw new IllegalStateException("존재하지 않는 프로젝트입니다");
+        });
+    }
+
+    public Project findTeamAndMemberById(Long id){
+        return projectRepository.findTeamAndMemberById(id).orElseThrow(()->{
             throw new IllegalStateException("존재하지 않는 프로젝트입니다");
         });
     }
