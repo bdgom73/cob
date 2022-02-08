@@ -8,7 +8,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form>
+                <form th:action="@{/teams/}+${teamId}+@{/state}" method="post">
                     <div class="mb-3">
                         <h4>
                             <th:block th:text="${member.memberNickname}"></th:block>
@@ -21,7 +21,8 @@
                         <span  class="text-success" th:if="${#strings.toString(member.joinState)} == 'WAITING'" th:text="대기"></span>
                         <span class="text-danger" th:if="${#strings.toString(member.joinState)} == 'BAN'" th:text="밴"></span>
                     </div>
-                    <select class="form-select mb-3" aria-label="select joinMember">
+                    <input type="hidden" name="memberId" th:value="${member.memberId}"/>
+                    <select class="form-select mb-3" name="state" aria-label="select joinMember">
                         <option value="OK" th:selected="${#strings.toString(member.joinState) == 'OK'}">승인</option>
                         <option value="WAITING" th:selected="${#strings.toString(member.joinState) == 'WAITING'}">대기</option>
                         <option value="BAN" th:selected="${#strings.toString(member.joinState) == 'BAN'}">밴</option>
@@ -35,7 +36,7 @@
                             <th:block>밴취소</th:block>
                         </option>
                     </select>
-                    <button type="button" class="btn btn-primary">변경</button>
+                    <button type="submit" class="btn btn-primary">변경</button>
                 </form>
             </div>
             <div class="modal-footer">

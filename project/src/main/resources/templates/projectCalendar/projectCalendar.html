@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/headerV1 :: common_headerV1(~{::title},~{::link})">
+    <title>Cob - 팀 일정관리</title>
+    <link th:href="@{/assets/css/home.css}" href="./assets/css/home.css" rel="stylesheet" type="text/css" media="all">
+    <link th:href="@{/assets/fullcalendar/lib/main.min.css}" href="./assets/css/home.css" rel="stylesheet" type="text/css" media="all">
+</head>
+<body th:replace="~{common/team/teamTemplate :: team_template(~{::main}, ${teamId})}">
+<main>
+    <script th:src="@{/assets/fullcalendar/lib/main.min.js}"></script>
+    <script th:src="@{/assets/fullcalendar/lib/locales/ko.js}"></script>
+    <section class="mt-3">
+        <div id="calendar"></div>
+    </section>
+    <script th:inline="javascript">
+      document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          selectable: true,
+          droppable : true,
+          locale : 'ko',
+          headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+          },
+          /* dateClick: function(info) {
+            alert('clicked ' + info.dateStr);
+          }, */
+          select: function(info) {
+            console.log(info);
+          },
+          events : [
+            {
+
+                title : "Test Event",
+                start : "2022-02-01",
+                end : "2022-02-05"
+            },
+            {
+                id : 30,
+                title : "Full Event",
+                start : "2022-02-08",
+                end : "2022-02-12"
+            },
+             {
+                title : "add GitHub Repository",
+                start : "2022-02-08T14:00:00",
+                end : "2022-02-08T15:00:00",
+                memo : "GitHub Repository : 'http://localhost:8080'",
+            }
+          ],
+          eventClick : (e)=>{
+            console.log(e.event.extendedProps.memo);
+          }
+        });
+
+        calendar.render();
+
+        let resultMsg = '[(${resultMsg})]';
+        if(resultMsg){
+            alert(resultMsg);
+        }
+      });
+
+    </script>
+</main>
+
+</body>
+</html>

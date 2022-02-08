@@ -1,12 +1,16 @@
-package team.project.Entity;
+package team.project.Entity.TeamEntity;
 
 import lombok.Getter;
+import team.project.Entity.BaseEntity;
+import team.project.Entity.Member;
+import team.project.Entity.ProjectCategory;
+import team.project.Entity.TeamEntity.Project;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
-public class Content extends BaseEntity{
+public class Content extends BaseEntity {
 
     @Id @GeneratedValue
     @Column(name = "content_id")

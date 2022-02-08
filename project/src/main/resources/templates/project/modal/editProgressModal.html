@@ -1,0 +1,24 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div class="modal fade" th:fragment="edit_progress(project)" id="edit_progress_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="join_members_label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="join_members_label">진행상황변경</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" th:object="${project}">
+                <form th:action="@{/teams/} + ${teamId} + @{/projects/}+ ${project.projectId}+ @{/edit/progress}" method="post" th:object="${project}">
+                    <select class="form-select mb-3" name="progress">
+                        <option th:each=" val : ${T(team.project.Entity.Progress).values()}" th:value="${val}" th:text="${val.getExplain()}"></option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">변경</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

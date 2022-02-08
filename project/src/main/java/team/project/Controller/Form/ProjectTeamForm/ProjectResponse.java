@@ -2,11 +2,8 @@ package team.project.Controller.Form.ProjectTeamForm;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import team.project.Entity.Member;
 import team.project.Entity.Progress;
-import team.project.Entity.Team;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data

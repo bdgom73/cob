@@ -1,6 +1,8 @@
-package team.project.Entity;
+package team.project.Entity.TeamEntity;
 
 import lombok.Getter;
+import team.project.Entity.DeveloperRole;
+import team.project.Entity.Member;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.project.Controller.Form.TeamForm.JoinMemberResponse;
-import team.project.Entity.JoinState;
-import team.project.Entity.JoinTeam;
+import team.project.Entity.TeamEntity.JoinState;
+import team.project.Entity.TeamEntity.JoinTeam;
 import team.project.Entity.Member;
 import team.project.Repository.JoinTeamRepository;
 

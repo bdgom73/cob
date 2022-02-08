@@ -1,6 +1,9 @@
-package team.project.Entity;
+package team.project.Entity.TeamEntity;
 
 import lombok.Getter;
+import team.project.Entity.BaseEntity;
+import team.project.Entity.Member;
+import team.project.Entity.ProjectCategory;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -8,12 +11,13 @@ import java.util.List;
 
 @Entity
 @Getter
-public class Team extends BaseEntity{
+public class Team extends BaseEntity {
 
     @Id @GeneratedValue
     @Column(name = "team_id")
     private Long id;
     private String name;
+    @Column(columnDefinition = "TEXT")
     private String introduction;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
@@ -41,9 +45,7 @@ public class Team extends BaseEntity{
     public void setMember(Member member){
         this.member = member;
     }
-//    public void setProjectCategory(ProjectCategory category){
-//        projectCategory = category;
-//    }
+
 
     public void changeTeam(String name, String introduction){
         this.name = name;

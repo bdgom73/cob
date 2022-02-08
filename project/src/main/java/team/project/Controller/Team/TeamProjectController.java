@@ -1,8 +1,6 @@
 package team.project.Controller.Team;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -11,16 +9,14 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import team.project.Controller.Form.ProjectTeamForm.ProjectResponse;
 import team.project.Dto.CreateProjectDto;
-import team.project.Entity.*;
-import team.project.Repository.JoinTeamRepository;
-import team.project.Repository.TeamRepository;
+import team.project.Entity.Progress;
+import team.project.Entity.TeamEntity.JoinTeam;
+import team.project.Entity.Member;
+import team.project.Entity.TeamEntity.Project;
 import team.project.Service.ArgumentResolver.Login;
-import team.project.Service.JoinTeamService;
 import team.project.Service.ProjectService;
-import team.project.Service.TeamService;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
@@ -103,6 +99,20 @@ public class TeamProjectController {
         }
 
         return "redirect:/teams/"+teamId+"/projects/"+projectId+"/edit";
+    }
+
+    @PostMapping("/teams/{teamId}/projects/{projectId}/edit/progress")
+    public String editTeamProjectProgress(
+            @RequestParam("progress") String progress,
+            @PathVariable("projectId") Long projectId  , @PathVariable("teamId") Long teamId,
+            @RequestAttribute("checkJoinTeam") JoinTeam joinTeam,
+            @SessionAttribute(name = "UID",required = false) Long memberId
+    ){
+        Project project = projectService.findMemberById(projectId);
+        if(Objects.equals(joinTeam.getTeam().getMember().getId(), memberId) || Objects.equals(project.getMember().getId(), memberId)){
+            projectService.changeProgress(project, Progress.valueOf(progress));
+        }
+        return "redirect:/teams/"+teamId+"/projects/"+projectId;
     }
 
     @Data

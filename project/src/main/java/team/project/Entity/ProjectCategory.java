@@ -1,6 +1,7 @@
 package team.project.Entity;
 
 import lombok.Getter;
+import team.project.Entity.TeamEntity.Team;
 
 import javax.persistence.*;
 

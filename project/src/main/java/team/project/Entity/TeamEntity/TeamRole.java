@@ -1,4 +1,4 @@
-package team.project.Entity;
+package team.project.Entity.TeamEntity;
 
 public enum TeamRole {
 

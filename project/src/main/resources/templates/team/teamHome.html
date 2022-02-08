@@ -7,7 +7,7 @@
 <body th:replace="common/basicLayout :: basic_body(~{::main})">
     <main>
         <section class="p-5">
-            <div class="d-flex justify-content-end">
+            <div class="d-flex justify-content-end" th:if="${loginMember != null}">
                 <a th:href="@{/teams/create}" class="btn btn-success">팀 만들기</a>
             </div>
             <hr>
@@ -16,7 +16,7 @@
                     <div class="row">
                         <div class="col">
                             <h3>팀이 없습니다. 팀을 만들어주세요!</h3>
-                            <button type="button" class="btn btn-primary">팀 만들기</button>
+                            <a th:href="@{/teams/create}" class="btn btn-primary">팀 만들기</a>
                         </div>
                         <div class="col mt-3 mb-3" style="min-width : 320px">
                             <img src="assets/images/teamsBack.jpg"
@@ -41,7 +41,7 @@
                                 <p class="card-text text-truncate" th:text="${team.introduction}">Team introduction</p>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-primary btn-sm">가입신청</button>
+                                        <button type="button" class="btn btn-primary btn-sm" th:onclick="|applyTeam(${team.teamId})|">가입신청</button>
                                     </div>
                                     <small class="text-muted" th:text="${#temporals.format(team.createDate,'yyyy-MM-dd HH시 mm분')}"></small>
                                 </div>
@@ -52,12 +52,33 @@
             </div>
         </section>
         <script th:inline="javascript">
+            let modal = new tingle.modal();
+
             document.addEventListener("DOMContentLoaded",()=>{
                 let resultMsg = '[(${resultMsg})]';
                 if(resultMsg){
                     alert(resultMsg);
                 }
             });
+
+             const applyTeam = (teamId) =>{
+                const path = `/team/${teamId}/apply`;
+                fetch(path,{
+                    method : "post",
+                    headers : {
+                        "Content-Type" : "application/json"
+                    }
+                }).then(res=>{
+                    if(res.status === 200){
+                        alert("가입신청했습니다.");
+                    }else{
+                        res.json().then(text=>{
+                            modal.setContent(`<h3>${text.message}</h3>`);
+                            modal.open();
+                        });
+                    }
+                }).catch(err=> console.log(err));
+            }
         </script>
     </main>
 

@@ -6,6 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.project.Dto.CreateProjectDto;
 import team.project.Entity.*;
+import team.project.Entity.TeamEntity.JoinState;
+import team.project.Entity.TeamEntity.JoinTeam;
+import team.project.Entity.TeamEntity.Project;
+import team.project.Entity.TeamEntity.Team;
 import team.project.Repository.ProjectMemberRepository;
 import team.project.Repository.ProjectRepository;
 
@@ -45,6 +49,10 @@ public class ProjectService {
     @Transactional
     public void changeProgress(Long projectId, Progress progress){
         Project project = findById(projectId);
+        project.setProgress(progress);
+    }
+    @Transactional
+    public void changeProgress(Project project, Progress progress){
         project.setProgress(progress);
     }
 

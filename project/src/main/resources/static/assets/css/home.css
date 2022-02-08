@@ -88,3 +88,6 @@ main{
 .error_fs{
     font-size : 12px;
 }
+.tingle-modal--visible{
+ z-index : 2000
+}

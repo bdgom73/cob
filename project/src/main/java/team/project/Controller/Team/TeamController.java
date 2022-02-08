@@ -2,7 +2,6 @@ package team.project.Controller.Team;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.mapping.Join;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,13 +14,17 @@ import team.project.Controller.Form.TeamForm.JoinMemberResponse;
 import team.project.Controller.Form.TeamForm.TeamForm;
 import team.project.Controller.Form.TeamForm.TeamsResponse;
 import team.project.Entity.*;
+import team.project.Entity.TeamEntity.Team;
+import team.project.Entity.TeamEntity.JoinState;
+import team.project.Entity.TeamEntity.JoinTeam;
 import team.project.Repository.JoinTeamRepository;
 import team.project.Repository.TeamRepository;
 import team.project.Service.ArgumentResolver.Login;
 import team.project.Service.JoinTeamService;
 import team.project.Service.TeamService;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,7 +50,7 @@ public class TeamController {
     }
 
     @GetMapping("/teams/{teamId}")
-    public String teamView(Model model,@RequestAttribute("checkJoinTeam") JoinTeam joinTeam){
+    public String teamView(Model model,@RequestAttribute(CommonConst.CheckJoinTeam) JoinTeam joinTeam){
         Team team = joinTeam.getTeam();
         Member member = team.getMember();
         TeamsResponse teamsResponse = new TeamsResponse(
@@ -104,6 +107,7 @@ public class TeamController {
         return "redirect:/teams/"+teamId;
     }
 
+
     @GetMapping("/teams/{teamId}/user")
     public String userInTeam(
             Model model,
@@ -112,6 +116,7 @@ public class TeamController {
             @RequestParam(value = "state", defaultValue = "OK") String state,
             @RequestAttribute(CommonConst.CheckJoinTeam) JoinTeam joinTeam
     ){
+        state = state.toUpperCase();
         try{
             List<JoinMemberResponse> resultList;
             if(JoinState.valueOf(state) == JoinState.WAITING){
@@ -132,13 +137,14 @@ public class TeamController {
         }catch (IllegalStateException e){
             redirectAttributes.addFlashAttribute("resultMsg", "팀 접근 권한이 없습니다");
             return "redirect:/teams";
+        }catch (IllegalArgumentException e){
+            return "redirect:/teams/"+teamId+"/user";
         }
 
     }
 
     @PostMapping("/teams/{teamId}/state")
-    @ResponseBody
-    public void changeState(
+    public String changeState(
             @PathVariable("teamId") Long teamId,
             @Login Long memberId,
             @RequestAttribute("checkJoinTeam") JoinTeam joinTeam,
@@ -153,6 +159,13 @@ public class TeamController {
                 teamService.doReject(teamId,joinMemberId);
             }
         }
+        return "redirect:/teams/"+teamId+"/user";
     }
 
+    @PostMapping("/team/{teamId}/apply")
+    @ResponseBody
+    public void applyTeam(@PathVariable("teamId") Long teamId , @Login Long memberId, HttpServletResponse response) throws IOException {
+        teamService.applyTeam(teamId,memberId);
+
+    }
 }

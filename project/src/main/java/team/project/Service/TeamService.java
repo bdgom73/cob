@@ -1,21 +1,22 @@
 package team.project.Service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.project.Entity.*;
+import team.project.Entity.TeamEntity.JoinState;
+import team.project.Entity.TeamEntity.JoinTeam;
+import team.project.Entity.TeamEntity.Team;
 import team.project.Repository.JoinTeamRepository;
 import team.project.Repository.MemberRepository;
 import team.project.Repository.TeamRepository;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,9 +40,22 @@ public class TeamService {
 
     @Transactional
     public Long applyTeam(Long teamId, Long memberId){
+        Optional<JoinTeam> findJoinTeam = joinTeamRepository.findMemberAndTeamByMemberAndTeam(memberId, teamId);
+        if(findJoinTeam.isPresent()){
+            JoinTeam joinTeam = findJoinTeam.get();
+            JoinState joinState = joinTeam.getJoinState();
+            if(joinState.equals(JoinState.OK)){
+                throw new IllegalStateException("이미 팀에 가입되어있습니다");
+            }else if(joinState.equals(JoinState.WAITING)){
+                throw new IllegalStateException("이미 팀에 신청 했습니다");
+            }else if(joinState.equals(JoinState.BAN)){
+                throw new IllegalStateException("신청이 불가능한 회원입니다");
+            }
+             throw new IllegalStateException("알 수 없는 이유로 신청에 실패했습니다");
+        }
         Team team = findById(teamId);
-        Member member = memberRepository.findById(memberId).orElseThrow(()->{
-            throw new UsernameNotFoundException("존재하지 않는 유저입니다");
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> {
+            throw new IllegalStateException("회원을 찾을 수 없습니다");
         });
         JoinTeam joinTeam = JoinTeam.applyTeam(team, member);
         joinTeamRepository.save(joinTeam);

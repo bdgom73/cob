@@ -2,7 +2,7 @@ package team.project.Controller.Form.TeamForm;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import team.project.Entity.Team;
+import team.project.Entity.TeamEntity.Team;
 
 import java.time.LocalDateTime;
 

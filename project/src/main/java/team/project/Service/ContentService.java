@@ -6,6 +6,10 @@ import org.springframework.transaction.annotation.Transactional;
 import team.project.Dto.Content.CreateContentDto;
 import team.project.Dto.Content.UpdateContentDto;
 import team.project.Entity.*;
+import team.project.Entity.TeamEntity.Content;
+import team.project.Entity.TeamEntity.JoinTeam;
+import team.project.Entity.TeamEntity.Project;
+import team.project.Entity.TeamEntity.Team;
 import team.project.Repository.ContentRepository;
 import team.project.Repository.ProjectCategoryRepository;
 

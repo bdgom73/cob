@@ -6,21 +6,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.*;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import team.project.CommonConst;
-import team.project.Controller.Form.TeamForm.TeamsResponse;
 import team.project.Dto.LoginMemberDto;
 import team.project.Entity.*;
-import team.project.Repository.MemberRepository;
-import team.project.Repository.TeamRepository;
+import team.project.Entity.TeamEntity.Project;
+import team.project.Entity.TeamEntity.Team;
+import team.project.Entity.TeamEntity.JoinState;
+import team.project.Entity.TeamEntity.JoinTeam;
 import team.project.Service.JoinTeamService;
 import team.project.Service.ProjectService;
-import team.project.Service.TeamService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j

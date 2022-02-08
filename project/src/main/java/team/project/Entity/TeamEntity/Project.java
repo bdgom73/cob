@@ -1,11 +1,11 @@
-package team.project.Entity;
+package team.project.Entity.TeamEntity;
 
 import lombok.Getter;
+import team.project.Entity.Member;
+import team.project.Entity.Progress;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -16,6 +16,7 @@ public class Project {
     private Long id;
 
     private String title;
+    @Column(columnDefinition = "TEXT")
     private String introduction;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
