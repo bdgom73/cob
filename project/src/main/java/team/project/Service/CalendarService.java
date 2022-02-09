@@ -12,6 +12,7 @@ import team.project.Repository.CalendarRepository;
 import team.project.Repository.TeamRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,18 +50,18 @@ public class CalendarService {
         java.util.Calendar calendar = java.util.Calendar.getInstance();
         calendar.set(year,month-1);
         int end = calendar.getActualMaximum(java.util.Calendar.DAY_OF_MONTH);
-        LocalDate startDate = LocalDate.of(year, month, 1);
-        LocalDate endDate = LocalDate.of(year, month, end);
+        LocalDateTime startDate = LocalDate.of(year, month, 1).atTime(0,0,0);
+        LocalDateTime endDate = LocalDate.of(year, month, end).atTime(0,0,0);
         return calendarRepository.findAllByTeamAndStartDateBetween(team,startDate, endDate);
     }
 
     public List<Calendar> monthSchedule(int year , int month, Team team){
         java.util.Calendar calendar = java.util.Calendar.getInstance();
-        calendar.set(year,month-1);
+        calendar.set(year, month-1, 1);
         int end = calendar.getActualMaximum(java.util.Calendar.DAY_OF_MONTH);
-        LocalDate startDate = LocalDate.of(year, month, 1);
-        LocalDate endDate = LocalDate.of(year, month, end);
-        return calendarRepository.findAllByTeamAndStartDateBetween(team,startDate, endDate);
+        LocalDateTime startDate = LocalDate.of(year, month, 1).atTime(0,0,0);
+        LocalDateTime endDate = LocalDate.of(year, month, end).atTime(0,0,0);
+        return calendarRepository.findAllByTeamAndStartDateBetween(team, startDate, endDate);
     }
 
     public Calendar findSchedule(Long calendarId){

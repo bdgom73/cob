@@ -13,5 +13,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CalendarRepository extends JpaRepository<Calendar, Long> {
-    List<Calendar> findAllByTeamAndStartDateBetween(Team team, LocalDate start, LocalDate end);
+    List<Calendar> findAllByTeamAndStartDateBetween(Team team, LocalDateTime start, LocalDateTime end);
 }

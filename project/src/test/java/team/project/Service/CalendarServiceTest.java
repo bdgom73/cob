@@ -31,5 +31,10 @@ class CalendarServiceTest {
 //
         System.out.println("startDate = "+ startDate);
         System.out.println("endDate = "+ endDate);
+
+        int aa = LocalDate.now().getYear();
+        int bb = LocalDate.now().getMonthValue();
+        System.out.println("getYear = " + aa);
+        System.out.println("getMonthValue = " + bb);
     }
 }

@@ -63,6 +63,12 @@ public class TeamCalendarController {
         return "projectCalendar/projectCalendar";
     }
 
+    @GetMapping("/teams/{teamId}/calendar/create")
+    public String createCalendarForm(Model model){
+        model.addAttribute("calendar", new CalendarForm());
+        return "projectCalendar/addProjectCalendarForm";
+    }
+
     @Data
     @AllArgsConstructor
     class CalendarResponse{
@@ -78,5 +84,13 @@ public class TeamCalendarController {
         private String memberName;
     }
 
-
+    @Data
+    class CalendarForm{
+        private Long groupId;
+        private String title;
+        private String memo;
+        private String start;
+        private String end;
+        private DateSaveType dateType;
+    }
 }

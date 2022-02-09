@@ -7,13 +7,24 @@
 </head>
 <body th:replace="~{common/team/teamTemplate :: team_template(~{::main}, ${teamId})}">
 <main>
+    <style>
+      a {
+        text-decoration: none;
+      }
+    </style>
     <script th:src="@{/assets/fullcalendar/lib/main.min.js}"></script>
     <script th:src="@{/assets/fullcalendar/lib/locales/ko.js}"></script>
     <section class="mt-3">
+        <div class="mb-3">
+          <a href="#" class="btn"><i class="bi bi-calendar"></i> 일정추가</a>
+        </div>
         <div id="calendar"></div>
     </section>
     <script th:inline="javascript">
       document.addEventListener('DOMContentLoaded', function() {
+
+        let dateEvents = [(${calendars})] ;
+
         var calendarEl = document.getElementById('calendar');
 
         var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -28,29 +39,10 @@
           /* dateClick: function(info) {
             alert('clicked ' + info.dateStr);
           }, */
-          select: function(info) {
-            console.log(info);
-          },
-          events : [
-            {
-
-                title : "Test Event",
-                start : "2022-02-01",
-                end : "2022-02-05"
-            },
-            {
-                id : 30,
-                title : "Full Event",
-                start : "2022-02-08",
-                end : "2022-02-12"
-            },
-             {
-                title : "add GitHub Repository",
-                start : "2022-02-08T14:00:00",
-                end : "2022-02-08T15:00:00",
-                memo : "GitHub Repository : 'http://localhost:8080'",
-            }
-          ],
+          // select: function(info) {
+          //   console.log(info);
+          // },
+          events : dateEvents,
           eventClick : (e)=>{
             console.log(e.event.extendedProps.memo);
           }
