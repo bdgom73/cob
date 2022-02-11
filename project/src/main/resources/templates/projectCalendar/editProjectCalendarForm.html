@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="common/headerV1 :: common_headerV1(~{::title},~{::link})">
-    <title>Cob - 일정 추가</title>
+    <title>Cob - 일정 수정</title>
     <link th:href="@{/assets/css/home.css}" href="./assets/css/home.css" rel="stylesheet" type="text/css" media="all">
     <!-- <link th:href="@{/assets/datepicker/css/bootstrap-datepicker3.min.css}" href="./assets/css/home.css" rel="stylesheet" type="text/css" media="all"> -->
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.38.0/css/tempusdominus-bootstrap-4.min.css" crossorigin="anonymous" /> -->
@@ -9,11 +9,11 @@
 <body th:replace="~{common/team/teamTemplate :: team_template(~{::main}, ${teamId})}">
     <main>
         <script th:src="@{/assets/datepicker/js/bootstrap-datepicker.min.js}"></script>
-        <script th:src="@{/assets/datepicker/locales/bootstrap-datepicker.ko.min.js}"></script> 
+        <script th:src="@{/assets/datepicker/locales/bootstrap-datepicker.ko.min.js}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.38.0/js/tempusdominus-bootstrap-4.min.js" crossorigin="anonymous"></script>
         <section>
             <h2 class="mt-3">
-                <span class="text-primary">일정 추가</span>
+                <span class="text-primary">일정 수정</span>
             </h2>
             <hr>
             <div class=" p-3 shadow rounded bg-body" style="margin : 0 auto; max-width : 800px">      
@@ -42,7 +42,7 @@
                         <input type="text" id="end" th:field="*{end}" autocomplete="off" class="form-control datetimepicker-input" data-toggle="datetimepicker" data-target="#end"/>
                     </div>    
                     <span class="text-muted"></span>
-                    <button type="submit" class="btn btn-primary w-100">일정 추가</button>
+                    <button type="submit" class="btn btn-primary w-100">일정 수정</button>
                 </form>
             </div>
         </section>
@@ -50,8 +50,9 @@
 
             $(document).ready(()=>{    
                 $(function () { 
+                    const dateType = $("#dateType");
 
-                    $("#dateType").change((e)=>{
+                    dateType.change((e)=>{
                         $("#start").val("");
                         $("#end").val("");
                         if(e.target.checked){    
@@ -63,13 +64,15 @@
                         }
                     });
 
+                    console.log(dateType.is(":checked"));
+                    
                     $('#start').datetimepicker({ 
-                        format: 'YYYY-MM-DD', 
+                        format: dateType.is(":checked") ? 'YYYY-MM-DD HH:mm' : "YYYY-MM-DD", 
                         autoclose:true,     
                         sideBySide: true                     
                     }); 
                     $('#end').datetimepicker({ 
-                        format: 'YYYY-MM-DD', 
+                        format: dateType.is(":checked") ? 'YYYY-MM-DD HH:mm' : "YYYY-MM-DD",  
                         useCurrent: false , 
                         autoclose:true,      
                         sideBySide: true    

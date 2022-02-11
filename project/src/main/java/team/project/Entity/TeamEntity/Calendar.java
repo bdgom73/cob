@@ -21,6 +21,7 @@ public class Calendar {
     private String title;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    @Enumerated(EnumType.STRING)
     private DateSaveType dateType;
     @Column(columnDefinition = "TEXT")
     private String memo;
@@ -43,6 +44,8 @@ public class Calendar {
         this.memo = memo;
         this.dateType = dateType;
     }
+
+    protected Calendar(){}
 
     public Calendar(Team team, Member member) {
         this.team = team;

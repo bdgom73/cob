@@ -44,6 +44,19 @@ public class CalendarService {
         calendarRepository.save(calendar);
     }
 
+    @Transactional
+    public void editSchedule(Long calendarId,CreateScheduleDto scheduleDto){
+        Calendar calendar = findSchedule(calendarId);
+        calendar.changeCalendar(scheduleDto.getTitle(),scheduleDto.getMemo(),scheduleDto.getStartDate(),scheduleDto.getEndDate(),scheduleDto.getDateType());
+        calendar.changeGroupId(scheduleDto.getGroupId());
+    }
+
+    @Transactional
+    public void editSchedule( Calendar calendar, CreateScheduleDto scheduleDto){
+        calendar.changeCalendar(scheduleDto.getTitle(),scheduleDto.getMemo(),scheduleDto.getStartDate(),scheduleDto.getEndDate(),scheduleDto.getDateType());
+        calendar.changeGroupId(scheduleDto.getGroupId());
+    }
+
     public List<Calendar> monthSchedule(int year , int month, Long teamId){
         Optional<Team> findTeam = teamRepository.findById(teamId);
         Team team = findTeam.get();
