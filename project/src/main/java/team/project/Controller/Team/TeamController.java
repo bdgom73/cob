@@ -3,6 +3,7 @@ package team.project.Controller.Team;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,8 +24,10 @@ import team.project.Service.ArgumentResolver.Login;
 import team.project.Service.JoinTeamService;
 import team.project.Service.TeamService;
 
+import javax.persistence.Convert;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -122,6 +125,9 @@ public class TeamController {
             if(JoinState.valueOf(state) == JoinState.WAITING){
                 resultList = joinTeamService.JoinTeamToResultList(teamId, JoinState.WAITING);
             }else if(JoinState.valueOf(state) == JoinState.BAN){
+                if(!Objects.equals(joinTeam.getTeam().getMember().getId(), joinTeam.getMember().getId())){
+                    throw new IllegalArgumentException();
+                }
                 resultList = joinTeamService.JoinTeamToResultList(teamId, JoinState.BAN);
             }else{
                 resultList = joinTeamService.JoinTeamToResultList(teamId, JoinState.OK);
@@ -161,6 +167,8 @@ public class TeamController {
         }
         return "redirect:/teams/"+teamId+"/user";
     }
+
+
 
     @PostMapping("/team/{teamId}/apply")
     @ResponseBody

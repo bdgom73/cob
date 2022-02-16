@@ -29,7 +29,7 @@ public class CalendarService {
     public void createSchedule(Long teamId, Long memberId, CreateScheduleDto scheduleDto){
         JoinTeam joinTeam = joinTeamService.findMemberAndTeamByMemberInTeam(memberId, teamId);
         Calendar calendar = Calendar.createSchedule(
-                scheduleDto.getTitle(), scheduleDto.getMemo() ,scheduleDto.getStartDate(), scheduleDto.getEndDate(),
+                scheduleDto.getTitle(), scheduleDto.getMemo() , scheduleDto.getColor(),scheduleDto.getStartDate(), scheduleDto.getEndDate(),
                 scheduleDto.getDateType(), scheduleDto.getGroupId(), joinTeam.getMember(), joinTeam.getTeam()
         );
         calendarRepository.save(calendar);
@@ -38,7 +38,7 @@ public class CalendarService {
     @Transactional
     public void createSchedule(Team team, Member member, CreateScheduleDto scheduleDto){
         Calendar calendar = Calendar.createSchedule(
-                scheduleDto.getTitle(),scheduleDto.getMemo(), scheduleDto.getStartDate(), scheduleDto.getEndDate(),
+                scheduleDto.getTitle(),scheduleDto.getMemo() , scheduleDto.getColor(), scheduleDto.getStartDate(), scheduleDto.getEndDate(),
                 scheduleDto.getDateType(), scheduleDto.getGroupId(), member , team
         );
         calendarRepository.save(calendar);
@@ -49,12 +49,14 @@ public class CalendarService {
         Calendar calendar = findSchedule(calendarId);
         calendar.changeCalendar(scheduleDto.getTitle(),scheduleDto.getMemo(),scheduleDto.getStartDate(),scheduleDto.getEndDate(),scheduleDto.getDateType());
         calendar.changeGroupId(scheduleDto.getGroupId());
+        calendar.changeColor(scheduleDto.getColor());
     }
 
     @Transactional
     public void editSchedule( Calendar calendar, CreateScheduleDto scheduleDto){
         calendar.changeCalendar(scheduleDto.getTitle(),scheduleDto.getMemo(),scheduleDto.getStartDate(),scheduleDto.getEndDate(),scheduleDto.getDateType());
         calendar.changeGroupId(scheduleDto.getGroupId());
+        calendar.changeColor(scheduleDto.getColor());
     }
 
     public List<Calendar> monthSchedule(int year , int month, Long teamId){
@@ -75,6 +77,16 @@ public class CalendarService {
         LocalDateTime startDate = LocalDate.of(year, month, 1).atTime(0,0,0);
         LocalDateTime endDate = LocalDate.of(year, month, end).atTime(0,0,0);
         return calendarRepository.findAllByTeamAndStartDateBetween(team, startDate, endDate);
+    }
+
+    public List<Calendar> rangeSchedule(LocalDateTime start , LocalDateTime end , Team team){
+        return calendarRepository.findAllByTeamAndStartDateBetween(team, start, end);
+    }
+
+    public List<Calendar> rangeSchedule(LocalDateTime start , LocalDateTime end , Long teamId){
+        Optional<Team> findTeam = teamRepository.findById(teamId);
+        Team team = findTeam.get();
+        return calendarRepository.findAllByTeamAndStartDateBetween(team, start, end);
     }
 
     public Calendar findSchedule(Long calendarId){

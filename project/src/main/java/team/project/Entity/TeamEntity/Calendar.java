@@ -21,6 +21,7 @@ public class Calendar {
     private String title;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    private String color;
     @Enumerated(EnumType.STRING)
     private DateSaveType dateType;
     @Column(columnDefinition = "TEXT")
@@ -45,6 +46,9 @@ public class Calendar {
         this.dateType = dateType;
     }
 
+    public void changeColor(String color){
+        this.color = color;
+    }
     protected Calendar(){}
 
     public Calendar(Team team, Member member) {
@@ -52,9 +56,10 @@ public class Calendar {
         this.member = member;
     }
 
-    public static Calendar createSchedule(String title, String memo ,LocalDateTime start, LocalDateTime end, DateSaveType dateType, Long groupId, Member member , Team team){
+    public static Calendar createSchedule(String title, String memo , String color, LocalDateTime start, LocalDateTime end, DateSaveType dateType, Long groupId, Member member , Team team){
         Calendar calendar = new Calendar(team , member);
         calendar.changeCalendar(title, memo, start, end, dateType);
+        calendar.changeColor(color);
         calendar.changeGroupId(groupId);
         return calendar;
     }

@@ -52,8 +52,8 @@ class ContentServiceTest {
 
         ProjectCategory testCategory = contentService.createCategory(team.getId(), "테스트");
 
-        CreateContentDto createContentDto = new CreateContentDto("test title", "test is very good", projectId, testCategory.getId());
-        Long aLong = contentService.writeContent(member2.getId(), createContentDto);
+//        CreateContentDto createContentDto = new CreateContentDto("test title", "test is very good", projectId, testCategory.getId());
+//        Long aLong = contentService.writeContent(member2.getId(), createContentDto);
     }
 
     private Team getTeam(Member member) {

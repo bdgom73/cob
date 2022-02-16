@@ -18,7 +18,7 @@
                        th:classappend="${#strings.toString(param.state) == 'WAITING'} ? 'active'"
                       >신청</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" th:if="${loginMember.memberId == team.leaderId}">
                     <a class="nav-link" href="?state=BAN"
                        th:classappend="${#strings.toString(param.state) == 'BAN'} ? 'active'"
                     >밴</a>
@@ -31,7 +31,7 @@
                 <tr>
                     <th>팀원명</th>
                     <th>상태</th>
-                    <th >
+                    <th>
                         <th:block th:if="${#strings.toString(param.state) == 'OK' || #strings.toString(param.state) == '' || #strings.toString(param.state) == null}">가입일</th:block>
                         <th:block th:if="${#strings.toString(param.state) == 'WAITING'}">신청일</th:block>
                         <th:block th:if="${#strings.toString(param.state) == 'BAN'}">제한일</th:block>

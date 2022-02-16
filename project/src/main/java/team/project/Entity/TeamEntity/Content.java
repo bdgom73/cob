@@ -3,6 +3,7 @@ package team.project.Entity.TeamEntity;
 import lombok.Getter;
 import team.project.Entity.BaseEntity;
 import team.project.Entity.Member;
+import team.project.Entity.Progress;
 import team.project.Entity.ProjectCategory;
 import team.project.Entity.TeamEntity.Project;
 
@@ -17,6 +18,7 @@ public class Content extends BaseEntity {
     private Long id;
 
     private String title;
+    @Column(columnDefinition = "TEXT")
     private String text;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,9 +29,7 @@ public class Content extends BaseEntity {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_category_id")
-    private ProjectCategory projectCategory;
+    private Progress category;
 
     protected Content() {
 
@@ -46,8 +46,8 @@ public class Content extends BaseEntity {
     public void setMember(Member member){
         this.member = member;
     }
-    public void setCategory(ProjectCategory category){
-        projectCategory = category;
+    public void setCategory(Progress category){
+        this.category = category;
     }
 
     public void updateContent(String title, String text){

@@ -22,7 +22,7 @@
             </div>
 
             <h4><i class="bi bi-pencil-square"></i> 소개말</h4>
-            <div class="shadow p-3 mb-5 rounded bg-light" style="border : 1px solid #dddddd" th:utext="${#strings.replace(team.introduction,nlString, '&lt;br /&gt;' )}"></div>
+            <div class="p-3 mb-5" style="border : 1px solid #dddddd" th:utext="${#strings.replace(team.introduction,nlString, '&lt;br /&gt;' )}"></div>
             <div th:if="${loginMember.memberId == team.leaderId}" style="text-align : right">
                 <button type="button" class="btn btn-warning" th:onclick="'location.href=\''+ @{/teams/} + ${team.teamId} + @{/edit} + '\''">수정</button>
             </div>

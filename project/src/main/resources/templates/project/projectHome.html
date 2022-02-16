@@ -32,12 +32,16 @@
                                 <span class="text-muted" th:text="${#temporals.format(project.projectEndDate,'yyyy-MM-dd HH시 mm분')}"></span>
                             </div>
                             <div class="progress mt-3" style="height: 30px;">
-                                <div class="progress-bar progress-bar-striped" role="progressbar" aria-valuemin="0" aria-valuemax="100"
-                                     th:style="${#strings.toString(project.projectProgress) == 'Requirements_Analysis' ? 'width : 20%' :
+                                <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+                                    th:style="${#strings.toString(project.projectProgress) == 'Requirements_Analysis' ? 'width : 20%' :
                                              #strings.toString(project.projectProgress) == 'Design' ? 'width : 40%' :
                                              #strings.toString(project.projectProgress) == 'Programming' ? 'width : 60%' :
                                              #strings.toString(project.projectProgress) == 'Testing' ? 'width : 80%' : 'width : 100%'}"
-                                     >
+                                    th:classappend="${#strings.toString(project.projectProgress) == 'Requirements_Analysis' ? 'bg-primary' :
+                                        #strings.toString(project.projectProgress) == 'Design' ? 'bg-success' :
+                                        #strings.toString(project.projectProgress) == 'Programming' ? 'bg-info text-dark' :
+                                        #strings.toString(project.projectProgress) == 'Testing' ? 'bg-warning text-dark' : 'bg-danger'}">
+                                    
                                     <th:block th:text="${project.projectProgress.getExplain()}"></th:block>
                                 </div>
                             </div>

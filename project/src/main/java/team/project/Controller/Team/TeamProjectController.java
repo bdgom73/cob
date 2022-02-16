@@ -103,7 +103,7 @@ public class TeamProjectController {
 
     @PostMapping("/teams/{teamId}/projects/{projectId}/edit/progress")
     public String editTeamProjectProgress(
-            @RequestParam("progress") String progress,
+            @RequestParam("projectProgress") String progress,
             @PathVariable("projectId") Long projectId  , @PathVariable("teamId") Long teamId,
             @RequestAttribute("checkJoinTeam") JoinTeam joinTeam,
             @SessionAttribute(name = "UID",required = false) Long memberId

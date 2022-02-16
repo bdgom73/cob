@@ -21,5 +21,6 @@ public class CreateScheduleDto {
     private LocalDateTime endDate;
     private DateSaveType dateType;
     private String memo;
+    private String color;
 
 }

@@ -3,48 +3,44 @@
 <head th:replace="common/headerV1 :: common_headerV1(~{::title},~{::link})">
     <title>Cob - 팀 일정관리</title>
     <link th:href="@{/assets/css/home.css}" href="./assets/css/home.css" rel="stylesheet" type="text/css" media="all">
-    <link th:href="@{/assets/fullcalendar/lib/main.min.css}" href="./assets/css/home.css" rel="stylesheet" type="text/css" media="all">
+    <link th:href="@{/assets/css/projectCalendar.css}" rel="stylesheet" type="text/css" media="all">
+    <link th:href="@{/assets/fullcalendar/lib/main.min.css}"  rel="stylesheet" type="text/css" media="all">
 </head>
 <body th:replace="~{common/team/teamTemplate :: team_template(~{::main}, ${teamId})}">
 <main>
-    <style>
-      a {
-        text-decoration: none;
-      }
-      .popover-header{
-        padding: 0;
-      }
-      .popover-date-header{
-        padding: .5rem 1rem;
-      }
-      a.fc-daygrid-event{
-        cursor: pointer;
-      }
-      @media screen and (max-width : 550px){
-        .fc-toolbar{
-          flex-direction: column !important;
-        }
-        .fc-toolbar .fc-toolbar-chunk{
-          margin: 5px 0 !important;
-        }
-      }
-    </style>
-    <script th:src="@{/assets/fullcalendar/lib/main.min.js}"></script>
-    <script th:src="@{/assets/fullcalendar/lib/locales/ko.js}"></script>
     <section class="mt-3">
         <div class="mb-3">
           <a th:href="@{/teams/}+${teamId}+@{/calendar/create}" class="btn btn-sm btn-warning"><i class="bi bi-calendar"></i> 일정추가</a>
         </div>
         <div id="calendar" class="mt-3"></div>
+
+        <div class="panel mb-3">
+          <div class="panel-heading">
+              <span class="fs-6 fw-bold">필터</span>
+          </div>
+          <div class="panel-body">
+              <div class="col-lg-6">
+                  <label for="calendar_view">프로젝트별</label>
+                  <div class="input-group">
+                      <select class="filter" id="type_filter" multiple="multiple" style="width: 100%;">
+                          <option th:object="${project}" th:value="*{projectId}" th:text="*{projectName}" th:each="project : ${projectNav}">카테고리1</option>             
+                      </select>
+                  </div>
+              </div>
+          </div>
+      </div>
     </section>
     <div th:replace="~{projectCalendar/modal/calendarDetailModal :: calendar_detail}"></div>
     <script th:inline="javascript">
-      var dateEvents =[[${calendars}]];  
-      
-      let resultMsg = '[(${resultMsg})]';
-      if(resultMsg){
-          alert(resultMsg);
-      } 
+        var teamId =[(${teamId})];  
+    //   "${project.memberId == loginMember.memberId || teamLeader.id == loginMember.memberId}"
+        var loginMemberId = [(${loginMember.memberId})];
+        var teamLeaderId = [(${teamLeader.id})];
+
+        let resultMsg = '[(${resultMsg})]';
+        if(resultMsg){
+            alert(resultMsg);
+        }  
     </script>
     <script th:src="@{/assets/js/projectCalendar.js}"></script>
 </main>

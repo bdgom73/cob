@@ -40,7 +40,23 @@
                         <input type="text" id="start" th:field="*{start}" autocomplete="off" data-toggle="datetimepicker" data-target="#start" class="form-control datetimepicker-input" />
                         <label for="end" class="form-label mt-1">종료일</label>
                         <input type="text" id="end" th:field="*{end}" autocomplete="off" class="form-control datetimepicker-input" data-toggle="datetimepicker" data-target="#end"/>
-                    </div>    
+                    </div>  
+                    <label class="form-label">색설정</label>             
+                    <div class="d-flex mb-2" id="background-color-change">   
+                        <div class="me-2 img-thumbnail" style="background-color : #3788d9; width: 3rem; height: 3rem;"></div>
+                        <select class="form-select form-select-sm" th:field="*{color}" >
+                            <option value="#3788d9" >기본</option>
+                            <option value="#D25565" >빨간색</option>
+                            <option value="#9775fa" >보라색</option>
+                            <option value="#ffa94d" >주황색</option>
+                            <option value="#74c0fc" >파란색</option>
+                            <option value="#f06595" >핑크색</option>
+                            <option value="#63e6be" >연두색</option>
+                            <option value="#a9e34b" >초록색</option>
+                            <option value="#4d638c" >남색</option>
+                            <option value="#495057" >검정색</option>
+                        </select>           
+                    </div> 
                     <span class="text-muted"></span>
                     <button type="submit" class="btn btn-primary w-100">일정 추가</button>
                 </form>
@@ -80,6 +96,11 @@
                     $("#end").on("change.datetimepicker", function (e) { 
                         $('#start').datetimepicker('maxDate', e.date); 
                     }); 
+                });
+
+                $("#background-color-change > div").css("backgroundColor", $("#background-color-change select").val());
+                $("#background-color-change select").on("change", (e)=>{
+                    $("#background-color-change > div").css("backgroundColor", e.target.value);
                 });
             })
            

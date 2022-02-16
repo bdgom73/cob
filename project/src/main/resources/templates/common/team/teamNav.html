@@ -4,32 +4,27 @@
         <ul class="nav flex-column">
             <li class="nav-item">
                 <a class="nav-link" th:classappend="${#request.getRequestURI()} == '/teams/'+${teamId} ? 'active' " aria-current="page" th:href="@{/teams/} + ${teamId}">
-                    <span data-feather="home"></span>
-                    Team
+                    <span data-feather="home"></span> Team
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" th:classappend="${#request.getRequestURI()} == '/teams/'+${teamId} +'/user' ? 'active' " th:href="@{/teams/}+ ${teamId} + @{/user}">
-                    <span data-feather="users"></span>
-                    팀원
+                    <span data-feather="users"></span> 팀원
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" th:classappend="${#request.getRequestURI()} == '/teams/'+${teamId} +'/projects' ? 'active' " th:href="@{/teams/}+ ${teamId} + @{/projects}" href="#">
-                    <span data-feather="file-text"></span>
-                    프로젝트
+                    <span data-feather="file-text"></span> 프로젝트
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" th:classappend="${#request.getRequestURI()} == '/teams/'+${teamId} +'/calendar' ? 'active' " th:href="@{/teams/}+ ${teamId} + @{/calendar}" href="#">
-                    <i class="bi bi-calendar"></i>
-                    전체일정
+                    <i class="bi bi-calendar" style="margin-right: 4px;"></i> 전체일정
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">
-                    <span data-feather="bar-chart-2"></span>
-                    하루한줄
+                <a class="nav-link" th:classappend="${#request.getRequestURI()} == '/teams/'+${teamId} +'/oneday' ? 'active' " th:href="@{/teams/}+ ${teamId} + @{/oneday}" href="#">
+                    <span data-feather="bar-chart-2"></span> 하루한줄
                 </a>
             </li>
         </ul>
@@ -40,12 +35,11 @@
         <ul class="nav flex-column mb-2">
             <li class="nav-item">
                 <a class="nav-link" href="#">
-                    <span data-feather="file-text"></span>
-                    일반게시판
+                    <span data-feather="file-text"></span> 일반게시판
                 </a>
             </li>
             <li class="nav-item" th:each="project : ${projectNav}">
-                <a class="nav-link" th:href="@{/teams/} + ${teamId} + @{/projects/} + ${project.projectId}">
+                <a class="nav-link" th:href="@{/teams/} + ${teamId} + @{/projects/bbs/} + ${project.projectId}"  th:classappend="${#request.getRequestURI()} == '/teams/'+${teamId} +'/projects/bbs/' + ${project.projectId} ? 'active'">
                     <span data-feather="file-text"></span>
                     <span th:text="${project.projectName}"></span>
                 </a>

@@ -2,6 +2,7 @@ package team.project.Dto.Content;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import team.project.Entity.Progress;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -10,12 +11,9 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class CreateContentDto {
 
-    @NotBlank
     private String title;
     private String text;
-    @NotNull
     private Long projectId;
-    @NotNull
-    private Long categoryId;
+    private Progress category;
 
 }

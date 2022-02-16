@@ -1,6 +1,8 @@
 package team.project.Service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.project.Dto.Content.CreateContentDto;
@@ -14,7 +16,6 @@ import team.project.Repository.ContentRepository;
 import team.project.Repository.ProjectCategoryRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -60,15 +61,14 @@ public class ContentService {
         });
     }
 
-    public ProjectCategory getCategory(Long categoryId){
-        return projectCategoryRepository.findById(categoryId).orElseThrow(()->{
-            throw new IllegalStateException("카테고리가 없습니다");
-        });
+    public List<Content> findProjectContent(Long projectId){
+        PageRequest pageRequest = PageRequest.of(0, 100);
+        return contentRepository.findByProjectId(projectId,pageRequest);
+    }
+    public List<Content>  findProjectContent(Long projectId, Pageable pageable){
+        return contentRepository.findByProjectId(projectId, pageable);
     }
 
-    public List<ProjectCategory> getTeamCategory(Long teamId){
-        return projectCategoryRepository.findByTeam(teamId);
-    }
 
     @Transactional
     public void deleteCategory(Long categoryId){
@@ -79,15 +79,7 @@ public class ContentService {
         Content content = new Content(contentDto.getTitle(), contentDto.getText());
         content.setMember(member);
         content.setProject(project);
-
-        Optional<ProjectCategory> findCategory = projectCategoryRepository.findById(contentDto.getCategoryId());
-
-        if(findCategory.isEmpty()){
-            content.setCategory(null);
-        }else{
-            content.setCategory(findCategory.get());
-        }
-
+        content.setCategory(contentDto.getCategory());
         return content;
     }
 
