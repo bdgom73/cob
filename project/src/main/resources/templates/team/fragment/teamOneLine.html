@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/headerV1 :: common_headerV1(~{::title},~{::link})">
+    <title>Cob - 하루한줄 </title>
+    <link th:href="@{/assets/css/home.css}" href="./assets/css/home.css" rel="stylesheet" type="text/css" media="all">
+</head>
+<body th:replace="~{common/team/teamTemplate :: team_template(~{::main}, ${teamId})}">
+<main>
+    <script src="https://cdn.ckeditor.com/ckeditor5/32.0.0/classic/ckeditor.js"></script>
+    <style>
+        .inline-calendar{
+            list-style: none;
+            padding : 0;
+        }
+        .inline-calendar li{
+            margin: 0 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .move_btn{
+            cursor: pointer;
+        }
+        a{
+            text-decoration: none;
+            color: #000;
+        }
+    </style>
+    <section>
+        <h3 id="date-year" class="text-center mt-3 mb-1"></h3>
+        <div class="d-flex justify-content-center">
+            <span class="move_btn" id="left_date"><i class="bi bi-caret-left"></i></span>          
+            <div id="editor_date"></div>
+            <span class="move_btn" id="right_date"><i class="bi bi-caret-right"></i></span> 
+        </div>
+        <hr/>
+        <div class="mt-3 mb-3 ">
+            <span class="text-muted  p-3 text-center" th:if="${#lists.size(oneLines) <= 0}">하루 한줄이 없습니다.</span>
+            <div th:unless="${#lists.size(oneLine) <= 0}" th:each="oneLine : ${oneLines}" th:object="${oneLine}">
+                <div class="mb-2">
+                    <span th:text="*{memberNickname}" class="me-2 fw-bold "></span>
+                    <span th:attr="data-cu-date=*{createDate}" th:text="*{createDate}" class="text-secondary oneLine-createDate" style="font-size: 12px;"> </span>
+                </div>
+                <p th:utext="*{text}" style="max-height: 100px; overflow-y: auto; padding-left: 10px;"></p>
+            </div>
+        </div>
+        <hr/>
+        <form th:action="@{/teams/}+ ${teamId} +@{/oneday/create}" method="post" th:object="${oneLineForm}">
+            <p class="text-muted"><small>하루한줄은 오늘날짜로만 작성됩니다</small></p>
+            <div>
+                <textarea id="editor" name="text" th:field="*{text}"></textarea>
+                <p class="text-danger" th:errors="*{text}"><small></small></p>
+            </div>
+            <div class="mt-2 text-end">
+                <button type="submit" class="btn btn-sm btn-dark">글쓰기</button>
+            </div>
+        </form>
+    </section>
+    <script th:inline="javascript">  
+        ClassicEditor
+        .create( document.querySelector( '#editor' ),{
+            toolbar: [ 'bold', 'italic', 'link',  'numberedList', 'bulletedList','undo', 'redo'],
+        }).catch( error => {
+            console.error( error );
+        });
+        ClassicEditor.builtinPlugins 
+        function getDates(startDate, stopDate) {
+            var dateArray = [];
+            var currentDate = moment(startDate);
+            var stopDate = moment(stopDate);
+            while (currentDate <= stopDate) {
+                dateArray.push( moment(currentDate).format('YYYY-MM-DD') )
+                currentDate = moment(currentDate).add(1, 'days');
+            }
+            return dateArray;
+        }
+
+        $(document).ready(()=>{ 
+            let cdate = [[${param.date}]];
+            
+            let week;
+            let today = Array.isArray(cdate) ? cdate.length > 0 ? moment(cdate[0]) : moment() : moment();
+            let startWeek = today.clone().week();
+            
+            // 날짜 그리기
+            function generate() { 
+                week = startWeek;
+                let ul = document.createElement("ul");
+                ul.className = "d-flex inline-calendar"
+                let content = "";
+                Array(7)
+                    .fill(0)
+                    .map((n, i) => {
+                    let current = today.clone()
+                        .startOf('day')
+                        .add(n-3 + i, 'day');
+                    
+                    let weekendColor = current.day() == 0 ? "color : #dc3545;" : current.day() == 6 ?  "color : #0d6efd;" : '';
+                    let currentClass = current.format("YYYY-MM-DD") == today.format("YYYY-MM-DD") ? "fs-6 fw-bold" : "";
+                    content += `<li data-info-date="${current.format('YYYY-MM-DD')}"">
+                            <a href="?date=${current.format('YYYY-MM-DD')}" style="${weekendColor}" class="${currentClass}" >${current.format('DD')}</a>
+                        </li>`;
+                });   
+                ul.innerHTML = content;
+                $("#editor_date").html(ul);
+            }
+            function getYearMonth(){  
+                const ym = moment().clone().week(week).format("YYYY년 MM월");
+                $("#date-year").html(ym);
+            }
+
+            generate();
+            getYearMonth();
+
+            // 날짜 이동 이벤트
+            $("#right_date").on("click",()=>{
+                // startWeek++;
+                today = today.add(1, 'days');
+                window.location.href=`?date=${today.format("YYYY-MM-DD")}`
+                // generate();
+                // getYearMonth();
+            });
+
+            $("#right_date i").hover(()=>{       
+                $("#right_date i").attr("class", "bi bi-caret-right-fill")
+            }, () => $("#right_date i").attr("class", "bi bi-caret-right"));
+
+            $("#left_date").on("click",()=>{
+                // startWeek--;
+                today = today.subtract(1, 'days');
+                window.location.href=`?date=${today.format("YYYY-MM-DD")}`
+                // generate();
+                // getYearMonth();
+            });
+
+            $("#left_date i").hover((e)=> {
+                $("#left_date i").attr("class","bi bi-caret-left-fill")
+            }, () => $("#left_date i").attr("class","bi bi-caret-left"));
+            
+            // 날짜를 n일전 형태로 변환 
+            $(".oneLine-createDate").each((index, ele)=>{
+                let date = $(ele).text();
+                $(ele).text( moment(date).fromNow() );   
+            })
+            
+        });
+    </script>
+</main>
+</body>
+</html>

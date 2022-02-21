@@ -66,7 +66,7 @@
                     <div class="mt-3 text-end" th:if="${project.memberId == loginMember.memberId || teamLeader.id == loginMember.memberId}">  
                         <hr/>
                         <a th:href="@{/teams/} + ${teamId} + @{/projects/} + ${project.projectId} + @{/edit}" class="btn btn-warning">수정</a>
-                        <a th:href="@{/teams/} + ${teamId} + @{/projects/} + ${project.projectId} + @{/edit}" class="btn btn-danger">삭제</a>
+                        <button type="button" class="btn btn-danger" id="delete-project-bt" data-bs-toggle="modal" data-bs-target="#delete-project-modal">삭제</button>
                     </div>
                 </div>
             </div>
@@ -74,6 +74,9 @@
     </section>
     <!--  가입현황 Modal  -->
     <div th:replace="project/modal/editProgressModal :: edit_progress(${project})"></div>
+    <!--  삭제Modal  -->
+    <div th:replace="project/modal/deleteProjectModal :: delete_project(${project})"></div>
+
     <script th:inline="javascript">
         document.addEventListener("DOMContentLoaded",()=>{
             let resultMsg = '[(${resultMsg})]';
@@ -81,6 +84,20 @@
                 alert(resultMsg);
             }
         });
+
+        const dpb = document.getElementById('delete-project-modal');
+        if(dpb){
+            let deleteProjectModal = new bootstrap.Modal(dpb, {
+                keyboard: false
+            });
+            document.getElementById('delete-project-bt').addEventListener("click", ()=>{
+                deleteProjectModal.show();
+            });        
+        }
+      
+        
+
+
     </script>
 </main>
 

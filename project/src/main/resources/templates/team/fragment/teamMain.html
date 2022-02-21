@@ -6,33 +6,52 @@
 </head>
 <body th:replace="~{common/team/teamTemplate :: team_template(~{::main}, ${teamId})}">
 <main>
-    <section style="">
-        <div class="col-md-auto p-3 " th:object="${team}" >
-            <h1  class="text-primary">
-                <i class="bi bi-box"></i>
+    <section>
+        <div class="col-md-auto mt-3" th:object="${team}" >
+            <div style="font-size: 25px;" class="fw-bold">
                 <th:block th:text="*{name}"></th:block>
-            </h1>
-            <hr/>
-            <h4><i class="bi bi-person-check-fill"></i> 팀장</h4>
-            <div class="d-flex mb-3 fs-4 align-items-center">
-                <span th:text="*{leaderNickname}"></span>
-                <span class="text-muted fs-6 text-bottom">
-                    (<th:block th:text="*{leaderName}"></th:block>)
-                </span>
             </div>
-
-            <h4><i class="bi bi-pencil-square"></i> 소개말</h4>
-            <div class="p-3 mb-5" style="border : 1px solid #dddddd" th:utext="${#strings.replace(team.introduction,nlString, '&lt;br /&gt;' )}"></div>
-            <div th:if="${loginMember.memberId == team.leaderId}" style="text-align : right">
-                <button type="button" class="btn btn-warning" th:onclick="'location.href=\''+ @{/teams/} + ${team.teamId} + @{/edit} + '\''">수정</button>
-            </div>
+            <hr/> 
+            <div class="mb-3 text-muted" style="font-size: 16px;">      
+                팀장 : <i class="bi bi-person-check-fill"></i> <span th:text="*{leaderNickname}"></span>         
+            </div>   
+            <div class="p-3 mb-5  ">
+                <div class="mb-2" style="border-bottom:1px solid #bbbbbb; padding-bottom: 5px;"><i class="bi bi-pencil-square"></i> 소개말</div>
+                <p style="margin: 0;" th:utext="${#strings.replace(team.introduction,nlString, '&lt;br /&gt;')}"></p>
+            </div>    
             <div class="text-muted text-center">
                 <span>CreateDate. </span>
                 <span th:text="${#temporals.format(team.createDate,'yyyy-MM-dd HH:mm')}"></span>
             </div>
-
+            <div th:if="${loginMember.memberId == team.leaderId}" style="text-align : right">
+                <button type="button" class="btn btn-light border me-1" th:onclick="'location.href=\''+ @{/teams/} + ${team.teamId} + @{/edit} + '\''">수정</button>
+                <button type="button" class="btn btn-danger" id="delete-team-bt">해체</button>
+            </div>
         </div>
     </section>
+     <!--  삭제Modal  -->
+    <div th:replace="team/modal/deleteTeamModal :: delete_team(${team})"></div>
+
+    <script th:inline="javascript">
+        document.addEventListener("DOMContentLoaded",()=>{   
+            let resultMsg = '[(${resultMsg})]';
+            
+            if(resultMsg){
+                let resultMsgModal = new tingle.modal();
+                resultMsgModal.setContent(`<span class="text-danger text-center fw-bold">${resultMsg}</span>`);
+                resultMsgModal.open();
+            }
+        });
+       const dtb = document.getElementById('delete-team-modal');
+        if(dtb){
+            let deleteTeamModal = new bootstrap.Modal(dtb, {
+                keyboard: false
+            });
+            document.getElementById('delete-team-bt').addEventListener("click", ()=>{
+                deleteTeamModal.show();
+            });        
+        }
+    </script>
 </main>
 </body>
 </html>

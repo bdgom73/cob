@@ -1,0 +1,54 @@
+@media screen and (max-width : 768px) {          
+    .table-grid thead{
+        display: none;
+    }
+    .table-grid tbody td{
+        display: block;
+    }
+    .table-grid tbody tr{
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 3;
+        margin-top: 5px;
+
+    }
+    .table-grid tbody .content-grid-contentId{
+        order : 1;
+        grid-column: span 1;
+    }   
+    .table-grid tbody .content-grid-createDate{
+        order : 1;
+        grid-column: span 2;
+        text-align: right;
+    }
+    .table-grid tbody .content-grid-createDate::before{
+        display: inline;
+        content: "작성일 : ";
+        font-size: 0.7em;
+        color : #686868;
+    }
+    .table-grid tbody .content-grid-memberNickname{
+        order : 2;
+        grid-column: span 3;
+    }      
+    .table-grid tbody .content-grid-memberNickname::before{
+        display: inline;
+        content: "작성자 : ";
+        font-size: 0.7em;
+        color : #686868;
+    }
+
+    .table-grid tbody .content-grid-title{
+        order : 3;
+        grid-column:  span 3;
+    }
+    .table-grid tbody .content-grid-title::before{
+        display: inline;
+        content: "제목 : ";
+        font-size: 0.7em;
+        color : #686868;
+    }
+
+  
+  
+}

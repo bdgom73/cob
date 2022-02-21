@@ -6,10 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.project.Dto.CreateProjectDto;
 import team.project.Entity.*;
-import team.project.Entity.TeamEntity.JoinState;
-import team.project.Entity.TeamEntity.JoinTeam;
-import team.project.Entity.TeamEntity.Project;
-import team.project.Entity.TeamEntity.Team;
+import team.project.Entity.TeamEntity.*;
+import team.project.Repository.CalendarRepository;
+import team.project.Repository.ContentRepository;
 import team.project.Repository.ProjectMemberRepository;
 import team.project.Repository.ProjectRepository;
 
@@ -26,6 +25,8 @@ public class ProjectService {
     private final TeamService teamService;
     private final JoinTeamService joinTeamService;
     private final ProjectMemberRepository projectMemberRepository;
+    private final CalendarRepository calendarRepository;
+    private final ContentRepository contentRepository;
 
     @Transactional
     public Long createProject(Long leaderMemberId, CreateProjectDto createProjectDto){
@@ -88,6 +89,15 @@ public class ProjectService {
             throw new IllegalStateException("해당 프로젝트 인원이 아닙니다");
         });
         projectMember.changeRole(role);
+    }
+
+    @Transactional
+    public void deleteProject(Long projectId){
+        List<Calendar> calendars = calendarRepository.findByGroupId(projectId);
+        List<Content> contents = contentRepository.findByProjectId(projectId);
+        calendarRepository.deleteAll(calendars);
+        contentRepository.deleteAll(contents);
+        projectRepository.deleteById(projectId);
     }
 
     public Project findById(Long id){

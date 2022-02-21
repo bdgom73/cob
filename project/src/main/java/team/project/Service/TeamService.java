@@ -7,12 +7,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.project.Entity.*;
-import team.project.Entity.TeamEntity.JoinState;
-import team.project.Entity.TeamEntity.JoinTeam;
-import team.project.Entity.TeamEntity.Team;
-import team.project.Repository.JoinTeamRepository;
-import team.project.Repository.MemberRepository;
-import team.project.Repository.TeamRepository;
+import team.project.Entity.TeamEntity.*;
+import team.project.Repository.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -27,12 +23,18 @@ public class TeamService {
     private final MemberRepository memberRepository;
     private final JoinTeamRepository joinTeamRepository;
     private final JoinTeamService joinTeamService;
+    private final OneLineRepository oneLineRepository;
+    private final CalendarRepository calendarRepository;
 
     @Transactional
     public Long createTeam(String teamName, String introduction, Long memberId){
         Member member = memberRepository.findById(memberId).orElseThrow(()->{
             throw new UsernameNotFoundException("존재하지 않는 유저입니다");
         });
+        Optional<Team> findTeam = teamRepository.findByName(teamName);
+        if(findTeam.isPresent()){
+            throw new IllegalStateException("이미 존재하는 팀이름입니다");
+        }
         Team team = Team.createTeam(teamName, introduction, member);
         teamRepository.save(team);
         return team.getId();
@@ -103,6 +105,15 @@ public class TeamService {
     public void changeDeveloperRole(Long teamId, Long memberId, DeveloperRole role){
         JoinTeam joinTeam = joinTeamService.findByMemberInTeam(memberId, teamId);
         joinTeam.changeDeveloperRole(role);
+    }
+
+    @Transactional
+    public void deleteTeam(Long teamId){
+        List<Calendar> calendars = calendarRepository.findByTeamId(teamId);
+        List<OneLine> oneLines = oneLineRepository.findByTeamId(teamId);
+        calendarRepository.deleteAll(calendars);
+        oneLineRepository.deleteAll(oneLines);
+        teamRepository.deleteById(teamId);
     }
 
     public Team findById(Long teamId){

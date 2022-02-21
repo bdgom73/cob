@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,10 +16,12 @@ import team.project.Controller.Form.TeamForm.JoinMemberResponse;
 import team.project.Controller.Form.TeamForm.TeamForm;
 import team.project.Controller.Form.TeamForm.TeamsResponse;
 import team.project.Entity.*;
+import team.project.Entity.TeamEntity.OneLine;
 import team.project.Entity.TeamEntity.Team;
 import team.project.Entity.TeamEntity.JoinState;
 import team.project.Entity.TeamEntity.JoinTeam;
 import team.project.Repository.JoinTeamRepository;
+import team.project.Repository.OneLineRepository;
 import team.project.Repository.TeamRepository;
 import team.project.Service.ArgumentResolver.Login;
 import team.project.Service.JoinTeamService;
@@ -38,8 +41,7 @@ public class TeamController {
 
     private final TeamService teamService;
     private final JoinTeamService joinTeamService;
-    private final JoinTeamRepository joinTeamRepository;
-    private final TeamRepository teamRepository;
+    private final OneLineRepository oneLineRepository;
 
     @GetMapping("/teams")
     public String teams(Model model,
@@ -66,29 +68,42 @@ public class TeamController {
         return "team/fragment/teamMain";
     }
 
-    @GetMapping("/teams/create")
-    public String teamForm(Model model, @Login Long memberId){
+    @GetMapping("/team/create")
+    public String teamForm(Model model, @Login Long memberId,RedirectAttributes attributes){
+        if(memberId == null){
+            attributes.addFlashAttribute("resultMsg","로그인 후 이용할 수 있는 서비스입니다.");
+            return "redirect:/teams";
+        }
         model.addAttribute("team", new TeamForm());
         return "team/addTeamForm";
     }
 
-    @PostMapping("/teams/create")
+    @PostMapping("/team/create")
     public String createTeamForm(
             @Login Long memberId,
-            @Validated @ModelAttribute("team") TeamForm form, BindingResult bindingResult, RedirectAttributes redirectAttributes
+            @ModelAttribute("team") @Validated TeamForm form, BindingResult bindingResult, RedirectAttributes redirectAttributes
     ){
         if(bindingResult.hasErrors()){
+            log.info("bindingResult  {}", bindingResult);
             return "team/addTeamForm";
         }
-        Long teamId = teamService.createTeam(form.getName(), form.getIntroduction(), memberId);
-        redirectAttributes.addAttribute("teamId", teamId);
-        return "redirect:/teams";
+        try{
+            Long teamId = teamService.createTeam(form.getName(), form.getIntroduction(), memberId);
+            redirectAttributes.addAttribute("teamId", teamId);
+            return "redirect:/teams";
+        }catch (IllegalStateException e){
+            bindingResult.rejectValue("name", null, e.getMessage());
+            return "team/addTeamForm";
+        }catch (UsernameNotFoundException e){
+            bindingResult.reject("usernameNotFound", e.getMessage());
+            return "team/addTeamForm";
+        }
+
     }
 
     @GetMapping("/teams/{teamId}/edit")
     public String editTeamForm(@Login Long memberId, @PathVariable("teamId") Long teamId, Model model){
         Team team = teamService.findById(teamId);
-//        JoinTeam joinTeam = joinTeamService.findMemberByMemberInTeam(memberId, teamId);
         if(!team.getMember().getId().equals(memberId)){
             return "redirect:/teams/"+ teamId;
         }
@@ -152,28 +167,48 @@ public class TeamController {
     @PostMapping("/teams/{teamId}/state")
     public String changeState(
             @PathVariable("teamId") Long teamId,
-            @Login Long memberId,
+            @SessionAttribute("UID") Long memberId,
             @RequestAttribute("checkJoinTeam") JoinTeam joinTeam,
             @RequestParam("state") String state,
-            @RequestParam("memberId") Long joinMemberId
+            @RequestParam("memberId") Long joinMemberId,
+            RedirectAttributes attributes
     ){
         if(joinTeam.getTeam().getMember().getId().equals(memberId)){
             String s = state.toUpperCase();
             if(s.equals("OK") || s.equals("WAITING") || s.equals("BAN")) {
+                if(joinTeam.getTeam().getMember().getId().equals(joinMemberId)){
+                    attributes.addFlashAttribute("resultMsg","팀장은 상태변경이 불가능합니다");
+                    return "redirect:/teams/"+teamId+"/user";
+                }
                 teamService.changeState(teamId,joinMemberId,JoinState.valueOf(s));
             }else if(s.equals("REJECT")){
-                teamService.doReject(teamId,joinMemberId);
+                if(joinTeam.getTeam().getMember().getId().equals(joinMemberId)){
+                    attributes.addFlashAttribute("resultMsg","팀장은 상태변경이 불가능합니다");
+                    return "redirect:/teams/"+teamId+"/user";
+                }else{
+                    teamService.doReject(teamId,joinMemberId);
+                }
+
             }
         }
         return "redirect:/teams/"+teamId+"/user";
     }
-
-
 
     @PostMapping("/team/{teamId}/apply")
     @ResponseBody
     public void applyTeam(@PathVariable("teamId") Long teamId , @Login Long memberId, HttpServletResponse response) throws IOException {
         teamService.applyTeam(teamId,memberId);
 
+    }
+
+    @PostMapping("/teams/{teamId}/delete")
+    public String deleteTeam(@PathVariable("teamId") Long teamId, RedirectAttributes redirectAttributes, @RequestAttribute(CommonConst.CheckJoinTeam) JoinTeam joinTeam) {
+        if(!joinTeam.getTeam().getMember().getId().equals(joinTeam.getMember().getId())){
+            redirectAttributes.addFlashAttribute("resultMsg",  "삭제권한이 없습니다.");
+            return "redirect:/teams/"+teamId;
+        }
+        teamService.deleteTeam(teamId);
+        redirectAttributes.addFlashAttribute("resultMsg",  "팀을 삭제했습니다 (더이상 복구할 수 없습니다)");
+        return "redirect:/teams";
     }
 }

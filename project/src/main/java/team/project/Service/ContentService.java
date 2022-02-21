@@ -12,6 +12,7 @@ import team.project.Entity.TeamEntity.Content;
 import team.project.Entity.TeamEntity.JoinTeam;
 import team.project.Entity.TeamEntity.Project;
 import team.project.Entity.TeamEntity.Team;
+import team.project.Repository.CommentsRepository;
 import team.project.Repository.ContentRepository;
 import team.project.Repository.ProjectCategoryRepository;
 
@@ -26,6 +27,7 @@ public class ContentService {
     private final ProjectService projectService;
     private final JoinTeamService joinTeamService;
     private final ProjectCategoryRepository projectCategoryRepository;
+    private final CommentsRepository commentsRepository;
     private final TeamService teamService;
 
     @Transactional
@@ -60,13 +62,26 @@ public class ContentService {
             throw new IllegalStateException("해당 글이 존재하지 않습니다");
         });
     }
-
+    public Content findMemberById(Long id){
+        return contentRepository.findMemberById(id).orElseThrow(()->{
+            throw new IllegalStateException("해당 글이 존재하지 않습니다");
+        });
+    }
+    public Content findFetchMemberAndProjectById(Long id){
+        return contentRepository.findFetchMemberAndProjectById(id).orElseThrow(()->{
+            throw new IllegalStateException("해당 글이 존재하지 않습니다");
+        });
+    }
     public List<Content> findProjectContent(Long projectId){
         PageRequest pageRequest = PageRequest.of(0, 100);
-        return contentRepository.findByProjectId(projectId,pageRequest);
+        return contentRepository.findFetchByProjectId(projectId,pageRequest);
     }
     public List<Content>  findProjectContent(Long projectId, Pageable pageable){
-        return contentRepository.findByProjectId(projectId, pageable);
+        return contentRepository.findFetchByProjectId(projectId, pageable);
+    }
+
+    public List<Content>  findOrderProjectContent(Long projectId, Progress order,Pageable pageable){
+        return contentRepository.findOrderByProjectId(projectId, order, pageable);
     }
 
 

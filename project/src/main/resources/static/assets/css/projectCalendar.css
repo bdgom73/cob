@@ -1,0 +1,31 @@
+a {
+text-decoration: none;
+}
+.popover-header{
+    padding: 0px !important;
+}
+.popover-date-header{
+    padding: .5rem 1rem;
+}
+a.fc-daygrid-event{
+cursor: pointer;
+}
+.panel{
+border: 1px solid #bbbbbb;
+border-top : 0;
+}
+.panel > .panel-heading{
+background-color: #dddddd;
+padding: .5rem ;
+}
+.panel > .panel-body{
+padding: 1.25rem;
+}
+@media screen and (max-width : 550px){
+.fc-toolbar{
+    flex-direction: column !important;
+}
+.fc-toolbar .fc-toolbar-chunk{
+    margin: 5px 0 !important;
+}
+}

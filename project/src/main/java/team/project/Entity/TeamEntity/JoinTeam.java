@@ -20,8 +20,10 @@ public class JoinTeam {
 
     private LocalDateTime joinDate;
 
+    @Enumerated(EnumType.STRING)
     private TeamRole teamRole;
 
+    @Enumerated(EnumType.STRING)
     private DeveloperRole developerRole;
 
     @ManyToOne(fetch = FetchType.LAZY)

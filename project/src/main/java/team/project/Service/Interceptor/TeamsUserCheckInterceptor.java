@@ -30,7 +30,7 @@ public class TeamsUserCheckInterceptor implements HandlerInterceptor {
     private final ProjectService projectService;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
         HttpSession session = request.getSession(true);
         String requestURI = request.getRequestURI();
         Long uid = (Long) session.getAttribute("UID");
@@ -43,7 +43,7 @@ public class TeamsUserCheckInterceptor implements HandlerInterceptor {
             return responseFlashMessage(request, response, fm, flashMap, "로그인 후 이용가능합니다","/login?redirectURI="+ request.getRequestURI());
         }
 
-        String teamId = (String) pathVariables.get("teamId");
+        String teamId = pathVariables.get("teamId").toString();
         log.info("teamId = {}",teamId);
         request.setAttribute("teamId", teamId);
         if(teamId != null){

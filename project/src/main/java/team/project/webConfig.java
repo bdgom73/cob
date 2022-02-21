@@ -34,11 +34,11 @@ public class webConfig implements WebMvcConfigurer {
         registry.addInterceptor(teamsUserCheckInterceptor)
                 .order(1)
                 .addPathPatterns("/teams/**")
-                .excludePathPatterns("/teams");
+                .excludePathPatterns("/teams","/*.icon","/teams/create");
         registry.addInterceptor(loginCheckInterceptor)
                 .order(2)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/assets/**", "/*.ico", "/error","/teams/*/**","/api/**");
+                .excludePathPatterns("/assets/**", "/*.ico" , "/*.icon", "/error"," /teams/*/**","/api/**");
     }
 
     @Override

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/headerV1 :: common_headerV1(~{::title},~{::link})">
+    <title>Cob - 찾을 수 없는 페이지</title>
+    <link th:href="@{/assets/css/home.css}" href="./assets/css/home.css" rel="stylesheet" type="text/css" media="all">
+</head>
+<body th:replace="common/basicLayout :: basic_body(~{::main})">
+<main>
+    <style>       
+        .Not_found-404 img{
+            width: 100%;
+            height: 100%;
+            max-width : 1280px;
+            max-height : 720px;
+        }       
+    </style>
+    <div class="Not_found-404 text-center mt-3">
+        <img th:src="@{/assets/images/not.png}" alt="notfound">
+    </div>
+</main>
+</body>
+</html>

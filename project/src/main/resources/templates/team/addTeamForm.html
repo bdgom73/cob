@@ -16,12 +16,16 @@
                     <div class="mb-3">
                         <label for="name" class="form-label">팀명</label>
                         <input type="text" class="form-control" id="name" th:field="*{name}" placeholder="Team name">
+                        <div class="text-danger" th:errors="*{name}"></div>
                     </div>
                     <div class="form-floating mb-3">
-                        <textarea class="form-control" th:field="*{introduction}" id="floatingIntroduceTextarea"></textarea>
+                        <textarea style="min-height: 200px;" class="form-control" th:field="*{introduction}" id="floatingIntroduceTextarea"></textarea>
                         <label for="floatingIntroduceTextarea">소개말을 입력 해주세요</label>
+                        <div class="text-danger" th:errors="*{introduction}"></div>
                     </div>
-
+                    <div th:if="${#fields.hasGlobalErrors()}">
+                        <p class="text-danger" th:each="err : ${#fields.globalErrors()}" th:text="${err}">전체 오류 메시지</p>
+                    </div>
                     <button type="submit" class="btn btn-primary w-100">팀생성</button>
                 </form>
             </div>

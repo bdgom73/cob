@@ -13,4 +13,7 @@ public interface OneLineRepository extends JpaRepository<OneLine,Long> {
 
     @Query("SELECT o FROM OneLine o JOIN FETCH o.member m WHERE o.team.id = :teamId AND o.date = :date")
     List<OneLine> findByTeamAndDate(@Param("teamId") Long teamId ,@Param("date") LocalDate date);
+
+    @Query("SELECT o FROM OneLine o WHERE o.team.id = :teamId")
+    List<OneLine> findByTeamId(@Param("teamId") Long teamId);
 }

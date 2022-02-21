@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.*;
 import team.project.Controller.Form.ProjectTeamForm.ProjectResponse;
 import team.project.Dto.CreateProjectDto;
 import team.project.Entity.Progress;
+import team.project.Entity.TeamEntity.Calendar;
 import team.project.Entity.TeamEntity.JoinTeam;
 import team.project.Entity.Member;
 import team.project.Entity.TeamEntity.Project;
+import team.project.Repository.CalendarRepository;
 import team.project.Service.ArgumentResolver.Login;
 import team.project.Service.ProjectService;
 
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
 public class TeamProjectController {
 
     private final ProjectService projectService;
+    private final CalendarRepository calendarRepository;
 
     @GetMapping("/teams/{teamId}/projects")
     public String teamProject(@PathVariable("teamId") Long teamId, Model model){
@@ -113,6 +116,16 @@ public class TeamProjectController {
             projectService.changeProgress(project, Progress.valueOf(progress));
         }
         return "redirect:/teams/"+teamId+"/projects/"+projectId;
+    }
+
+    @PostMapping("/teams/{teamId}/projects/{projectId}/delete")
+    public String deleteProject(@PathVariable("projectId") Long projectId,@PathVariable("teamId") Long teamId){
+        try{
+            projectService.deleteProject(projectId);
+            return "redirect:/teams"+teamId+"/projects";
+        }catch (Exception e){
+            return "redirect:/teams"+teamId+"/projects/"+projectId;
+        }
     }
 
     @Data

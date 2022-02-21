@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/headerV1 :: common_headerV1(~{::title},~{::link})">
+    <title>Cob - 프로젝트 게시판</title>
+    <link th:href="@{/assets/css/home.css}" href="./assets/css/home.css" rel="stylesheet" type="text/css" media="all">
+</head>
+<body th:replace="~{common/team/teamTemplate :: team_template(~{::main}, ${teamId})}">
+    <main>    
+        <script src="https://cdn.ckeditor.com/ckeditor5/32.0.0/classic/ckeditor.js"></script>
+        <style>
+            .ck-blurred{
+                border: 0 !important;
+                border-bottom: 1px solid #bbb !important;
+            }
+            .ck-focused{
+                border: 0 !important;
+                box-shadow: none !important;
+                border-bottom: 1px solid #222 !important;
+            }
+            .ck-toolbar{
+                border: 0 !important;
+            }
+        </style>
+        <section class="p-1">
+            <div class="p-3">
+                <div th:object="${content}">
+                    <div style="font-size : 25px; font-weight: bold; " class="mb-2" th:text="*{title}"></div>
+                    <div class="d-flex pb-2 justify-content-between" style="border-bottom : 5px solid #eeeeee;">
+                        <div class="text-muted">
+                            <span class="ms-1 me-1" th:text="*{category.getExplain()}"></span>
+                            | <span class="ms-1 me-1 fromNow" th:text="*{createDate}"></span>
+                            | <span class="ms-1 me-1">
+                                <i class="bi bi-person-fill"></i>
+                                <th:block th:text="*{memberNickname}"></th:block>
+                            </span>
+                        </div>
+                        <div th:if="${(loginMember.memberId == content.memberId) || (loginMember.memberId == teamLeader.id)}">     
+                            <i style="cursor: pointer;" class="bi bi-three-dots-vertical" id="popover_controller"></i>
+                        </div>
+                    </div>  
+                    <div class="p-2 ck-content">
+                        <p th:utext="*{text}"></p>
+                    </div>
+                </div>             
+                <div class="mt-3 p-1" style="font-size: 16px; font-weight: bold; border-top : 1px solid #eeeeee;">
+                    댓글 <span class="text-muted fw-300" style="font-size: 13px;" th:text="|${#lists.size(comments)}개|"></span>
+                </div>
+                <div class="mb-3 mt-3 ">
+                    <form method="post" th:object="${commentForm}"
+                        th:action="@{/teams/} + ${teamId} + @{/projects/bbs/} + ${projectId} + @{/} + ${content.contentId} + @{/comments}">
+                        <textarea id="comment_text" name="comment" th:field="*{content}"></textarea>
+                        <div class="text-end  mt-2">
+                            <button type="submit" class="btn btn-sm btn-dark">댓글달기</button>
+                        </div>    
+                    </form>
+
+                    <div class="text-center p-3" th:if="${#lists.size(comments) <= 0 }">
+                        <span class="text-muted">댓글이 없습니다</span>
+                    </div> 
+                    <div class="p-3" th:unless="${#lists.size(comments) <= 0 }" th:each="comment : ${comments}" >
+                        <div>
+                            <span style="font-size: 16px; font-weight: bold;" >
+                                <span th:if="${content.memberId == comment.memberId}" class="badge rounded-pill bg-danger">작성자</span>
+                                <th:block th:text="${comment.memberNickname}"></th:block>
+                            </span>
+                            <div class="d-flex justify-content-between">
+                                <span class="fromNow text-muted" style="font-size: 13px;" th:text="${comment.createDate}"></span>
+                                <div th:if="${(loginMember.memberId == comment.memberId) || (loginMember.memberId == teamLeader.id)}">     
+                                    <i style="cursor: pointer;" class="bi bi-three-dots-vertical" id="popover_comment_controller" data-isUpdate="false"
+                                    th:attr="data-commentsId=${comment.commentsId}"></i>
+                                </div>
+                            </div>
+                           
+                        </div>
+                        <div>
+                            <div>
+                                <div th:utext="${comment.text}" th:id="|comment-${comment.commentsId}|"></div>
+                            <div>
+                            <div class="comment_btn mt-1"></div>
+                        </div>
+                        
+                    </div>                 
+                </div>
+            </div>
+        </section>
+        <script th:inline="javascript">
+            let teamId = [[${teamId}]];
+            let projectId = [[${projectId}]];
+            let contentId = [[${content.contentId}]];
+
+            document.addEventListener("DOMContentLoaded",()=>{
+                let resultMsg = '[(${resultMsg})]';
+                if(resultMsg){
+                    alert(resultMsg);
+                }
+                
+                const popCont = document.getElementById('popover_controller');
+
+                if(popCont){
+                    new bootstrap.Popover(document.getElementById('popover_controller'), {
+                    trigger: 'click',
+                    content : `
+                        <div>
+                            <div class="p-1 mb-1 fw-bold"><a href="/teams/${teamId}/projects/bbs/${projectId}/${contentId}/edit">수정</a></div>
+                            <div class="p-1 mb-1 text-danger">삭제</div>
+                        </div>
+                    `,
+                    html : true
+                });
+                }
+                
+
+                document.querySelectorAll('#popover_comment_controller').forEach((ele,index)=>{
+                    const commentsId = ele.dataset.commentsid;
+                    new bootstrap.Popover(ele, {           
+                        trigger: 'click',
+                        content : `
+                            <div>
+                                <div class="p-1 mb-1 fw-bold" id="deleteComment-${commentsId}">수정</div>
+                                <div class="p-1 mb-1 text-danger">삭제</div>
+                            </div>
+                        `,
+                        html : true
+                    });
+
+                    $(ele).on('shown.bs.popover',  () => {
+                        var dc = document.getElementById("deleteComment-"+commentsId);      
+                        dc.addEventListener("click", (e)=>{ 
+                            if(ele.dataset.isupdate === "false"){
+                                editComment(commentsId, ele);
+                                ele.dataset.isupdate = "true";
+                            }
+                        });
+                    })
+                });
+                   
+            });   
+            
+
+            function editComment(commentsId,ele){
+                const comm = document.querySelector("#comment-"+commentsId);
+                const edit = ClassicEditor.create(comm,{
+                    toolbar : {
+                        items : ["bold","italic", "|","undo","redo"]
+                    }
+                }).catch(e=> console.error(e));    
+                
+                const btnWrap = comm.parentElement.querySelector(".comment_btn");
+                
+                const submutBtn = document.createElement("button");
+                submutBtn.className="btn btn-sm btn-dark";
+                submutBtn.type="button";
+                submutBtn.innerText = "수정"
+                submutBtn.onclick = () =>{
+                    let loginId = [[${session.UID}]];
+                    edit.then((_edit)=>{
+                        const data = {
+                            "text" : _edit.getData()             
+                        }
+                        $.ajax({
+                            method : "POST",
+                            url : `/api/teams/${teamId}/comments/${commentsId}/edit`,
+                            data : JSON.stringify(data),
+                            headers:{
+                                "Content-Type":"application/json",
+                                "Authorization" : loginId
+                            },                   
+                            success : (res)=>{
+                                _edit.setData(res.text);
+                                closeUpdate(_edit);
+                            },
+                            error : (e) => {
+                                alert(e.responseText);
+                            }
+                        })
+                    })
+                }
+                btnWrap.appendChild(submutBtn);
+
+                const cancelBtn = document.createElement("button");
+                cancelBtn.className="btn btn-sm btn-danger ms-1";
+                cancelBtn.type="button";
+                cancelBtn.innerText = "취소"
+                cancelBtn.onclick = ()=>{
+                    edit.then(edit=> edit.destroy());
+                    closeUpdate(edit, btnWrap, ele);
+                }
+                btnWrap.appendChild(cancelBtn);
+
+                function closeUpdate(editor){
+                    editor.destroy();
+                    btnWrap.removeChild(submutBtn);
+                    btnWrap.removeChild(cancelBtn);
+                    ele.dataset.isupdate = false;
+                }
+            }
+
+            $(".fromNow").each((index, ele)=>{
+                let fromNowDate = $(ele).text();
+                $(ele).text( moment(fromNowDate).fromNow() );
+            });
+
+            ClassicEditor
+                .create( document.querySelector( '#comment_text' ),{
+                    toolbar : {
+                        items : ["bold","italic", "|","undo","redo"]
+                    }
+                })
+                .catch( error => {
+                    console.error( error );
+                });
+        </script>
+    </main>
+
+</body>
+</html>

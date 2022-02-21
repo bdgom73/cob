@@ -11,6 +11,10 @@ package team.project.Entity;
 public enum Progress {
 
     /**
+     * 전체
+     * */
+    All("전체"),
+    /**
      * 요구사항 분석
     * */
     Requirements_Analysis("요구사항분석"),
@@ -37,6 +41,7 @@ public enum Progress {
      * 배포 및 운영
      * */
     Maintenance("배포 및 운영");
+
 
 
     String explain;

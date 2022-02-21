@@ -24,10 +24,7 @@
                     >밴</a>
                 </li>
             </ul>
-            <table class="table" th:object="${joinTeams}" >
-                <tr>
-                    <th th:colspan="3">팀원<th>
-                </tr>
+            <table class="table" th:object="${joinTeams}" >        
                 <tr>
                     <th>팀원명</th>
                     <th>상태</th>
@@ -36,7 +33,7 @@
                         <th:block th:if="${#strings.toString(param.state) == 'WAITING'}">신청일</th:block>
                         <th:block th:if="${#strings.toString(param.state) == 'BAN'}">제한일</th:block>
                     </th>
-                    <th>변경</th>
+                    <th th:if="${loginMember.memberId == teamLeader.id}">변경</th>
                 </tr>
                 <tr th:each=" member : ${joinTeams}" >
                     <td th:if="${member.memberId == team.leaderId}">
@@ -48,8 +45,8 @@
                     </td>
                     <td th:text="${member.joinState.getState()}"></td>
                     <td th:text="${#temporals.format(member.joinDate,'yyyy-MM-dd HH시 mm분')}"></td>
-                    <td>
-                        <div th:if="${loginMember.memberId == team.leaderId}">
+                    <td th:if="${loginMember.memberId == teamLeader.id}">
+                        <div >
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#team_state_modal">변경</button>
                         </div>
                     </td>
@@ -61,6 +58,17 @@
         </div>
 
     </section>
+    <script th:inline="javascript">
+        document.addEventListener("DOMContentLoaded",()=>{   
+            let resultMsg = '[(${resultMsg})]';
+            
+            if(resultMsg){
+                let resultMsgModal = new tingle.modal();
+                resultMsgModal.setContent(`<span class="text-danger text-center fw-bold">${resultMsg}</span>`);
+                resultMsgModal.open();
+            }
+        });
+    </script>
 </main>
 </body>
 </html>

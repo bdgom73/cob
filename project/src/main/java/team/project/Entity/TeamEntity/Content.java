@@ -8,6 +8,8 @@ import team.project.Entity.ProjectCategory;
 import team.project.Entity.TeamEntity.Project;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -18,7 +20,7 @@ public class Content extends BaseEntity {
     private Long id;
 
     private String title;
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     private String text;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,6 +32,9 @@ public class Content extends BaseEntity {
     private Project project;
 
     private Progress category;
+
+    @OneToMany(mappedBy = "content",cascade = CascadeType.ALL)
+    private List<Comments> comments = new ArrayList<>();
 
     protected Content() {
 
