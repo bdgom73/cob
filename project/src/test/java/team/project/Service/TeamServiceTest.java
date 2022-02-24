@@ -10,7 +10,7 @@ import team.project.Entity.*;
 import team.project.Entity.TeamEntity.Team;
 import team.project.Entity.TeamEntity.JoinState;
 import team.project.Entity.TeamEntity.JoinTeam;
-import team.project.Repository.JoinTeamRepository;
+import team.project.Repository.Team.JoinTeamRepository;
 import team.project.Repository.MemberRepository;
 
 import javax.persistence.EntityManager;

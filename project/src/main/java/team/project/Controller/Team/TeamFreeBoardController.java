@@ -13,17 +13,16 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import team.project.CommonConst;
 import team.project.Dto.Content.CreateContentDto;
+import team.project.Dto.Content.FreeCreateContentDto;
+import team.project.Dto.Content.UpdateFreeContentDto;
 import team.project.Dto.Content.WriteCommentContentDto;
 import team.project.Entity.Member;
 import team.project.Entity.Progress;
 import team.project.Entity.TeamEntity.*;
-import team.project.Repository.Team.ContentRepository;
-import team.project.Service.CommentsService;
-import team.project.Service.ContentService;
-import team.project.Service.ProjectService;
+import team.project.Repository.Team.FreeContentRepository;
+import team.project.Service.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -31,85 +30,66 @@ import java.util.stream.Collectors;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
-public class TeamProjectBoardController {
+public class TeamFreeBoardController {
 
-    private final ContentService contentService;
-    private final ContentRepository contentRepository;
+    private final FreeContentService contentService;
     private final ProjectService projectService;
-    private final CommentsService commentsService;
+    private final FreeCommentsService commentsService;
+    private final FreeContentRepository freeContentRepository;
 
-    @GetMapping("/teams/{teamId}/projects/bbs/{projectId}")
+    @GetMapping("/teams/{teamId}/bbs/free")
     public String projectBoardList(
-            Model model, @PathVariable("projectId") Long projectId, @PathVariable("teamId") Long teamId,
-            @RequestParam(value = "page",defaultValue = "0") int page, @RequestParam(value = "size",defaultValue = "20") int size,
-            @RequestParam(value = "category",defaultValue = "All") String category , @RequestParam(value = "orderValue",defaultValue = "DESC") String orderValue
+            Model model, @PathVariable("teamId") Long teamId,
+            @RequestParam(value = "page",defaultValue = "0") int page, @RequestParam(value = "size",defaultValue = "20") int size
     ){
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        List<Content> contentList ;
-
-        if(Objects.equals(category, "Requirements_Analysis")){
-            contentList = contentService.findOrderProjectContent(projectId,Progress.Requirements_Analysis,pageRequest);
-        }else if(Objects.equals(category, "Design")){
-            contentList = contentService.findOrderProjectContent(projectId,Progress.Design,pageRequest);
-        }else if(Objects.equals(category, "Programming")){
-            contentList = contentService.findOrderProjectContent(projectId,Progress.Programming,pageRequest);
-        }else if(Objects.equals(category, "Testing")){
-            contentList = contentService.findOrderProjectContent(projectId,Progress.Testing,pageRequest);
-        }else if(Objects.equals(category, "Maintenance")){
-            contentList = contentService.findOrderProjectContent(projectId,Progress.Maintenance,pageRequest);
-        }else{
-            contentList = contentService.findProjectContent(projectId,pageRequest);
-        }
+        List<FreeContent> contentList = contentService.findMemberTeamByTeamId(teamId, pageRequest);
 
         List<BoardResponse> resultList = contentList.stream().map(c -> {
             Member m = c.getMember();
-            Project p = c.getProject();
             return new BoardResponse(
-                    c.getId(), c.getTitle(), c.getText(), c.getCategory(),
+                    c.getId(), c.getTitle(), c.getText(), c.getNotice(),
                     m.getId(), m.getNickname(), m.getName(),
-                    p.getId(), p.getTitle(),
                     c.getCreatedDate(), c.getModifiedDate(), c.getComments().size());
         }).collect(Collectors.toList());
 
         model.addAttribute("contents", resultList);
         model.addAttribute("teamId", teamId);
-        model.addAttribute("projectId", projectId);
-        return "project/content/projectBoard";
+        return "project/freeContent/projectBoard";
     }
 
-    @GetMapping("/teams/{teamId}/projects/bbs/{projectId}/create")
+    @GetMapping("/teams/{teamId}/bbs/free/create")
     public String projectBoardForm(Model model, @PathVariable("teamId") Long teamId){
         model.addAttribute("projectBoard", new CreateBoardForm());
         model.addAttribute("teamId", teamId);
-        return "project/content/addProjectBoardForm";
+        return "project/freeContent/addProjectBoardForm";
     }
 
-    @PostMapping("/teams/{teamId}/projects/bbs/{projectId}/create")
-    public String postProjectBoardForm(@PathVariable("teamId") Long teamId, @PathVariable("projectId") Long projectId, @SessionAttribute("UID") Long memberId,
+    @PostMapping("/teams/{teamId}/bbs/free/create")
+    public String postProjectBoardForm(@PathVariable("teamId") Long teamId,  @SessionAttribute("UID") Long memberId,
         @ModelAttribute("projectBoard") CreateBoardForm form, BindingResult bindingResult
     ){
         if(bindingResult.hasErrors()){
             log.info("bindingResult = {}", bindingResult);
-            return "redirect:/teams/"+teamId+"/projects/bbs/create";
+            return "redirect:/teams/"+teamId+"/bbs/free/create";
         }
 
         if(memberId == null){
-            return "redirect:/teams/"+teamId+"/projects/bbs/create";
+            return "redirect:/teams/"+teamId+"/bbs/free/create";
         }
-
+        log.info("Create value = {}", form);
         try{
-            Project project = projectService.findById(projectId);
-            Long contentId = contentService.writeContent(memberId, new CreateContentDto(form.getTitle(), form.getText(), project.getId(), Progress.valueOf(form.getProgress())));
-            return "redirect:/teams/"+teamId+"/projects/bbs/"+projectId + "/" + contentId;
+            Long contentId = contentService.writeContent(memberId, new FreeCreateContentDto(form.getTitle(), form.getText(), form.getTeamId(), form.getNotice()));
+            return "redirect:/teams/"+teamId+"/bbs/free/" + contentId;
         }catch (IllegalStateException e){
-            return "redirect:/teams/"+teamId+"/projects/bbs/create";
+            return "redirect:/teams/"+teamId+"/bbs/free/create";
         }
 
     }
 
-    @GetMapping("/teams/{teamId}/projects/bbs/{projectId}/{contentId}")
+    @GetMapping("/teams/{teamId}/bbs/free/{contentId}")
     public String detailProjectBoardForm(Model model, @PathVariable("contentId") Long contentId){
-        Content c = contentService.findMemberById(contentId);
+        FreeContent c = contentService.findMemberById(contentId);
         Member m = c.getMember();
         PageRequest pageRequest = PageRequest.of(0, 100, Sort.by("createdDate").descending());
         List<CommentsResponse> commentsList = commentsService.findAllByContentId(contentId,pageRequest).stream().map(cm -> {
@@ -118,95 +98,90 @@ public class TeamProjectBoardController {
                     m2.getId(), m2.getNickname(), m2.getName(),
                     cm.getCreatedDate(), cm.getModifiedDate());
         }).collect(Collectors.toList());
-        BoardDetailResponse boardDetailResponse = new BoardDetailResponse(c.getId(), c.getTitle(), c.getText(), c.getCategory(),
+
+        BoardDetailResponse boardDetailResponse = new BoardDetailResponse(c.getId(), c.getTitle(), c.getText(), c.getNotice(),
                 m.getId(), m.getNickname(), m.getName(), c.getCreatedDate(), c.getModifiedDate());
 
         model.addAttribute("content", boardDetailResponse);
         model.addAttribute("comments", commentsList);
-        model.addAttribute("projectId", c.getProject().getId());
         model.addAttribute("commentForm", new WriteCommentContentDto());
-        return "project/content/projectBoardDetail";
+        return "project/freeContent/projectBoardDetail";
     }
 
-    @GetMapping("/teams/{teamId}/projects/bbs/{projectId}/{contentId}/edit")
+    @GetMapping("/teams/{teamId}/bbs/free/{contentId}/edit")
     public String editProjectBoardForm(Model model,
            @SessionAttribute("UID") Long memberId,
            @RequestAttribute(CommonConst.CheckJoinTeam) JoinTeam joinTeam,
            @PathVariable("teamId") Long teamId,
-           @PathVariable("projectId") Long projectId,
            @PathVariable("contentId") Long contentId
     ){
 
-        Content content = contentService.findById(contentId);
+        FreeContent content = contentService.findById(contentId);
         if(!joinTeam.getTeam().getMember().getId().equals(memberId)){
             if(!content.getMember().getId().equals(memberId)){
-                return "redirect:/teams/"+ teamId +"/projects/bbs/" +projectId + "/" + contentId;
+                return "redirect:/teams/"+ teamId +"/bbs/free/" + contentId;
             }
         }
 
         CreateBoardForm createBoardForm = new CreateBoardForm();
-        createBoardForm.setProjectId(content.getProject().getId());
-        createBoardForm.setProgress(content.getCategory().toString());
+        createBoardForm.setTeamId(content.getTeam().getId());
+        createBoardForm.setNotice(content.getNotice());
         createBoardForm.setText(content.getText());
         createBoardForm.setTitle(content.getTitle());
-        model.addAttribute("projectBoard", createBoardForm);
-        return "project/content/editProjectBoardForm";
+        model.addAttribute("board", createBoardForm);
+        return "project/freeContent/editProjectBoardForm";
     }
 
-    @PostMapping("/teams/{teamId}/projects/bbs/{projectId}/{contentId}/edit")
+    @PostMapping("/teams/{teamId}/bbs/free/{contentId}/edit")
     public String editPostProjectBoardForm(
-            @ModelAttribute("projectBoard") CreateBoardForm form, BindingResult bindingResult,
-            @SessionAttribute("UID") Long memberId,
-            @RequestAttribute(CommonConst.CheckJoinTeam) JoinTeam joinTeam,
-            @PathVariable("teamId") Long teamId,
-            @PathVariable("contentId") Long contentId,
-            @PathVariable("projectId") Long projectId
+            @ModelAttribute("board") CreateBoardForm form, BindingResult bindingResult,
+           @SessionAttribute("UID") Long memberId,
+           @RequestAttribute(CommonConst.CheckJoinTeam) JoinTeam joinTeam,
+           @PathVariable("teamId") Long teamId,
+           @PathVariable("contentId") Long contentId
     ){
 
         if(bindingResult.hasErrors()){
-            return "redirect:/teams/" + teamId + "/projects/bbs/" + projectId +"/" + contentId;
+            return "redirect:/teams/"+teamId+"/bbs/free/"+contentId;
         }
-        Content content = contentService.findById(contentId);
+        FreeContent content = contentService.findById(contentId);
         if(!joinTeam.getTeam().getMember().getId().equals(memberId)){
             if(!content.getMember().getId().equals(memberId)){
-                return "redirect:/teams/" + teamId + "/projects/bbs/" + projectId +"/" + contentId;
+                return "redirect:/teams/"+ teamId +"/bbs/free/" + contentId;
             }
         }
-        content.updateContent(form.getTitle(), form.getText());
-        content.setCategory(Progress.valueOf(form.getProgress()));
-        return "redirect:/teams/" + teamId + "/projects/bbs/" + projectId +"/" + contentId;
+        UpdateFreeContentDto updateFreeContentDto = new UpdateFreeContentDto(form.getTitle(), form.getText(), form.getNotice());
+        contentService.updateContent(content, updateFreeContentDto);
+        return "redirect:/teams/"+ teamId +"/bbs/free/" + contentId;
     }
 
-    @PostMapping("/teams/{teamId}/projects/bbs/{projectId}/{contentId}/delete")
+    @PostMapping("/teams/{teamId}/bbs/free/{contentId}/delete")
     public String deleteProjectBoardForm(
             @SessionAttribute("UID") Long memberId,
             @RequestAttribute(CommonConst.CheckJoinTeam) JoinTeam joinTeam,
             @PathVariable("teamId") Long teamId,
             @PathVariable("contentId") Long contentId,
-            @PathVariable("projectId") Long projectId,
             RedirectAttributes attributes
     ){
         try{
-            Content content = contentService.findMemberById(contentId);
+            FreeContent content = contentService.findMemberById(contentId);
             if(content.getMember().getId().equals(memberId) || joinTeam.getTeam().getMember().getId().equals(memberId)){
-                contentRepository.delete(content);
+                freeContentRepository.delete(content);
                 attributes.addFlashAttribute("resultMsg","해당 게시글을 삭제했습니다");
             }else{
                 throw new IllegalStateException("삭제 권한이 없습니다");
             }
-            return "redirect:/teams/"+ teamId +"/projects/bbs/"+projectId;
+            return "redirect:/teams/"+ teamId +"/bbs/free";
         }catch (Exception e){
             attributes.addFlashAttribute("resultMsg",e.getMessage());
-            return "redirect:/teams/"+ teamId +"/projects/bbs/"+projectId;
+            return "redirect:/teams/"+ teamId +"/bbs/free";
         }
-
-
     }
 
     @Data
     class CreateBoardForm{
-        private Long projectId;
-        private String progress;
+        private Long teamId;
+        private Boolean notice;
         private String title;
         private String text;
     }
@@ -217,12 +192,10 @@ public class TeamProjectBoardController {
         private Long contentId;
         private String title;
         private String text;
-        private Progress category;
+        private Boolean notice;
         private Long memberId;
         private String memberNickname;
         private String memberName;
-        private Long projectId;
-        private String projectTitle;
         private LocalDateTime createDate;
         private LocalDateTime modifiedDate;
         private int count;
@@ -234,7 +207,7 @@ public class TeamProjectBoardController {
         private Long contentId;
         private String title;
         private String text;
-        private Progress category;
+        private Boolean notice;
         private Long memberId;
         private String memberNickname;
         private String memberName;

@@ -47,10 +47,6 @@ class ContentServiceTest {
         teamService.applyTeam(team.getId(), member2.getId());
         teamService.doAccept(team.getId(), member2.getId());
 
-        System.out.println("============================START================================== ");
-        projectService.addProjectMember(team.getId(),projectId, member.getId(), member2.getId());
-
-        ProjectCategory testCategory = contentService.createCategory(team.getId(), "테스트");
 
 //        CreateContentDto createContentDto = new CreateContentDto("test title", "test is very good", projectId, testCategory.getId());
 //        Long aLong = contentService.writeContent(member2.getId(), createContentDto);

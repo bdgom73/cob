@@ -1,4 +1,4 @@
-package team.project.Repository;
+package team.project.Repository.Team;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

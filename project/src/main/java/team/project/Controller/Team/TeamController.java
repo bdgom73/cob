@@ -2,8 +2,10 @@ package team.project.Controller.Team;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.QueryException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,21 +18,16 @@ import team.project.Controller.Form.TeamForm.JoinMemberResponse;
 import team.project.Controller.Form.TeamForm.TeamForm;
 import team.project.Controller.Form.TeamForm.TeamsResponse;
 import team.project.Entity.*;
-import team.project.Entity.TeamEntity.OneLine;
 import team.project.Entity.TeamEntity.Team;
 import team.project.Entity.TeamEntity.JoinState;
 import team.project.Entity.TeamEntity.JoinTeam;
-import team.project.Repository.JoinTeamRepository;
-import team.project.Repository.OneLineRepository;
-import team.project.Repository.TeamRepository;
+import team.project.Repository.Team.OneLineRepository;
 import team.project.Service.ArgumentResolver.Login;
 import team.project.Service.JoinTeamService;
 import team.project.Service.TeamService;
 
-import javax.persistence.Convert;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,12 +43,20 @@ public class TeamController {
     @GetMapping("/teams")
     public String teams(Model model,
             @RequestParam(name = "page", defaultValue = "0") int page ,
-            @RequestParam(value = "size", defaultValue = "20") int size
+            @RequestParam(value = "size", defaultValue = "20") int size,
+            @RequestParam(value = "direction", defaultValue = "#{T(org.springframework.data.domain.Sort.Direction).DESC}") Sort.Direction direction,
+            @RequestParam(value = "property", defaultValue = "createdDate") String property
     ){
-        List<TeamsResponse> teams = teamService.findAllJoinMember(PageRequest.of(page, size))
-                .stream().map(TeamsResponse::new).collect(Collectors.toList());
-        model.addAttribute("teams", teams);
-        return "team/teamHome";
+        try{
+            PageRequest pageRequest = PageRequest.of(page, size, direction, property);
+            List<TeamsResponse> teams = teamService.findAllJoinMember(pageRequest)
+                    .stream().map(TeamsResponse::new).collect(Collectors.toList());
+            model.addAttribute("teams", teams);
+            return "team/teamHome";
+        }catch (IllegalArgumentException | QueryException | InvalidDataAccessApiUsageException e ){
+            return "redirect:/teams?property=createdDate&direction=DESC";
+        }
+
     }
 
     @GetMapping("/teams/{teamId}")

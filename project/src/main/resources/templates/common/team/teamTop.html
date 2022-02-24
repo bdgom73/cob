@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <header th:fragment="team_header" class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 logo" href="#" style="font-size:15px">Cob</a>
-    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 logo" href="/" style="font-size:15px">Cob</a>
+    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" 
+    data-bs-target="#teamSidebarMenu" aria-controls="teamSidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
+   
     <div class="navbar-nav">
-        <div class="nav-item text-nowrap" th:unless="${loginMember} == null" th:object="${loginMember}">
+        <div class="nav-item text-nowrap" th:object="${loginMember}">
             <div class="header_path p-2 d-none d-md-flex">
                 <span class="me-3" style="font-size : 12px;color : #fff ">
                     <span style="color : #fff" href="#" th:text="*{nickname}"></span>님
@@ -15,6 +16,7 @@
                 <a style="color : #fff" class="d-none d-md-inline-block" href="/logout">로그아웃</a>
             </div>
         </div>
+
     </div>
 </header>
 </html>

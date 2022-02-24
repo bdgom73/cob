@@ -1,4 +1,4 @@
-package team.project.Repository;
+package team.project.Repository.Team;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,4 +21,7 @@ public interface TeamRepository extends JpaRepository<Team,Long> {
     Optional<Team> findMemberById(@Param("teamId") Long teamId );
 
     Optional<Team> findByName(String name);
+
+    @Query("SELECT count(t) FROM Team t WHERE t.member.id =:memberId")
+    long countByMemberId(@Param("memberId") Long memberId);
 }

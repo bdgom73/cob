@@ -9,6 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 import team.project.Entity.*;
 import team.project.Entity.TeamEntity.*;
 import team.project.Repository.*;
+import team.project.Repository.Team.CalendarRepository;
+import team.project.Repository.Team.JoinTeamRepository;
+import team.project.Repository.Team.OneLineRepository;
+import team.project.Repository.Team.TeamRepository;
 
 import java.util.List;
 import java.util.Objects;
@@ -34,6 +38,10 @@ public class TeamService {
         Optional<Team> findTeam = teamRepository.findByName(teamName);
         if(findTeam.isPresent()){
             throw new IllegalStateException("이미 존재하는 팀이름입니다");
+        }
+        long count = teamRepository.countByMemberId(memberId);
+        if(count >= 5){
+            throw new IllegalStateException("더 이상 팀 생성이 불가능합니다");
         }
         Team team = Team.createTeam(teamName, introduction, member);
         teamRepository.save(team);

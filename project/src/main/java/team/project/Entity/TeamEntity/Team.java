@@ -3,7 +3,6 @@ package team.project.Entity.TeamEntity;
 import lombok.Getter;
 import team.project.Entity.BaseEntity;
 import team.project.Entity.Member;
-import team.project.Entity.ProjectCategory;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -52,12 +51,6 @@ public class Team extends BaseEntity {
         return team;
     }
 
-
-    public static Team createTeam(String name, String introduction, Member member, ProjectCategory category){
-        Team team = initTeam(name, introduction, member);
-        category.setTeam(team);
-        return team;
-    }
 
     private static Team initTeam(String name, String introduction, Member member) {
         Team team = new Team(name, introduction);

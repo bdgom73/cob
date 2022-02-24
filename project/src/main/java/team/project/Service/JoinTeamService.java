@@ -7,9 +7,12 @@ import team.project.Controller.Form.TeamForm.JoinMemberResponse;
 import team.project.Entity.TeamEntity.JoinState;
 import team.project.Entity.TeamEntity.JoinTeam;
 import team.project.Entity.Member;
-import team.project.Repository.JoinTeamRepository;
+import team.project.Repository.Team.JoinTeamRepository;
+import team.project.Repository.Team.StatCount;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,17 +29,17 @@ public class JoinTeamService {
     }
     public JoinTeam findByMemberInTeam(Long memberId, Long teamId){
         return joinTeamRepository.findByMemberAndTeam(memberId, teamId).orElseThrow(() -> {
-            throw new IllegalStateException("내역이 없습니다");
+            throw new IllegalStateException("가입 후 이용가능합니다");
         });
     }
     public JoinTeam findMemberByMemberInTeam(Long memberId, Long teamId){
         return joinTeamRepository.findMemberByMemberAndTeam(memberId, teamId).orElseThrow(() -> {
-            throw new IllegalStateException("내역이 없습니다");
+            throw new IllegalStateException("가입 후 이용가능합니다");
         });
     }
     public JoinTeam findMemberAndTeamByMemberInTeam(Long memberId, Long teamId){
         return joinTeamRepository.findMemberAndTeamByMemberAndTeam(memberId, teamId).orElseThrow(() -> {
-            throw new IllegalStateException("내역이 없습니다");
+            throw new IllegalStateException("가입 후 이용가능합니다");
         });
     }
 
@@ -62,5 +65,9 @@ public class JoinTeamService {
                             j.getJoinState(), j.getJoinDate()
                     );
                 }).collect(Collectors.toList());
+    }
+
+    public Map<String, Long> findByStatDate(LocalDate date, Long teamId){
+        return joinTeamRepository.findByStatDate(date,teamId).stream().collect(Collectors.toMap(StatCount::getDate, StatCount::getCount));
     }
 }

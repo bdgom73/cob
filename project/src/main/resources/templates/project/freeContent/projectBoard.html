@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/headerV1 :: common_headerV1(~{::title},~{::link})">
+    <title>Cob - 프로젝트 게시판</title>
+    <link th:href="@{/assets/css/home.css}" href="./assets/css/home.css" rel="stylesheet" type="text/css" media="all">
+    <link th:href="@{/assets/css/projectBoard.css}" rel="stylesheet" type="text/css" media="all">
+</head>
+<body th:replace="~{common/team/teamTemplate :: team_template(~{::main}, ${teamId})}">
+    <main>    
+        <style>
+            a{
+                text-decoration: none;
+            }
+        </style>
+        <section class="p-1">
+            <div class="col-md-auto p-3 ">              
+                <table class="table table-grid">      
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>제목</th>    
+                            <th>작성자</th>
+                            <th>작성일</th>
+                        </tr>
+                    </thead> 
+                    <tbody>
+                        <tr th:each="content : ${contents}" th:object="${content}">
+                            <td class="content-grid-contentId" th:text="*{contentId}"></td>           
+                            <td class="content-grid-title" >
+                                <span th:if="${content.notice}" class="badge bg-danger">공지사항</span>
+                                <a th:href="@{/teams/}+${teamId}+@{/bbs/free/} + *{contentId}" th:text="*{title}"></a>
+                                <span class="badge bg-secondary rounded-pill" th:text="*{count}"></span>
+                            </td> 
+                            <td class="content-grid-memberNickname" th:text="*{memberNickname}"></td>
+                            <td class="content-grid-createDate" th:text="${#temporals.format(content.createDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                        </tr>    
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        <script th:inline="javascript">
+
+            document.addEventListener("DOMContentLoaded",()=>{
+                let resultMsg = '[(${resultMsg})]';
+                if(resultMsg){
+                    alert(resultMsg);
+                }
+            });   
+          
+        </script>
+    </main>
+
+</body>
+</html>

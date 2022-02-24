@@ -48,7 +48,7 @@
                 <td colspan="3">
                     <div class="d-inline-block" th:if="${loginMember != null}">
                         <div th:if="${loginMember.memberId == team.leaderId}">
-                            <button type="button" class="btn btn-warning" th:onclick="|location.href='@{/teams/{teamId}/edit(teamId=${team.teamId})}'|">수정</button>
+                            <button type="button" class="btn btn-warning" th:onclick="|location.href='@{/@teams/{teamId}(teamId=${team.teamId})}'|">수정</button>
                             <!--  가입현황 Modal 버튼  -->
                             <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#join_members_modal">가입현황</button>
                         </div>

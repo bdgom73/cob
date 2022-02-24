@@ -1,4 +1,4 @@
-package team.project.Repository;
+package team.project.Repository.Team;
 
 import org.apache.tomcat.jni.Local;
 import org.springframework.data.jpa.repository.JpaRepository;

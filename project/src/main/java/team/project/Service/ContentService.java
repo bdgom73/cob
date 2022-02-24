@@ -11,10 +11,7 @@ import team.project.Entity.*;
 import team.project.Entity.TeamEntity.Content;
 import team.project.Entity.TeamEntity.JoinTeam;
 import team.project.Entity.TeamEntity.Project;
-import team.project.Entity.TeamEntity.Team;
-import team.project.Repository.CommentsRepository;
-import team.project.Repository.ContentRepository;
-import team.project.Repository.ProjectCategoryRepository;
+import team.project.Repository.Team.ContentRepository;
 
 import java.util.List;
 
@@ -26,9 +23,6 @@ public class ContentService {
     private final ContentRepository contentRepository;
     private final ProjectService projectService;
     private final JoinTeamService joinTeamService;
-    private final ProjectCategoryRepository projectCategoryRepository;
-    private final CommentsRepository commentsRepository;
-    private final TeamService teamService;
 
     @Transactional
     public Long writeContent(Long memberId, CreateContentDto contentDto){
@@ -47,15 +41,6 @@ public class ContentService {
         content.updateContent(contentDto.getTitle(), contentDto.getText());
     }
 
-
-    @Transactional
-    public ProjectCategory createCategory(Long teamId, String categoryName){
-        Team team = teamService.findById(teamId);
-        ProjectCategory projectCategory = new ProjectCategory(categoryName);
-        projectCategory.setTeam(team);
-        projectCategoryRepository.save(projectCategory);
-        return projectCategory;
-    }
 
     public Content findById(Long id){
         return contentRepository.findById(id).orElseThrow(()->{
@@ -84,11 +69,6 @@ public class ContentService {
         return contentRepository.findOrderByProjectId(projectId, order, pageable);
     }
 
-
-    @Transactional
-    public void deleteCategory(Long categoryId){
-        projectCategoryRepository.deleteById(categoryId);
-    }
 
     private Content createContent(CreateContentDto contentDto, Project project, Member member) {
         Content content = new Content(contentDto.getTitle(), contentDto.getText());

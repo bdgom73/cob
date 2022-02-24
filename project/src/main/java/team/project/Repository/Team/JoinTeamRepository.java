@@ -1,4 +1,4 @@
-package team.project.Repository;
+package team.project.Repository.Team;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,7 +9,7 @@ import team.project.Entity.TeamEntity.JoinTeam;
 import java.util.List;
 import java.util.Optional;
 
-public interface JoinTeamRepository extends JpaRepository<JoinTeam, Long> {
+public interface JoinTeamRepository extends JpaRepository<JoinTeam, Long> , StatJoinTeamRepository {
 
     @Query("SELECT j FROM JoinTeam j WHERE j.member.id = :memberId AND j.team.id = :teamId")
     Optional<JoinTeam> findByMemberAndTeam(@Param("memberId") Long memberId, @Param("teamId") Long teamId);

@@ -12,11 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import team.project.Controller.Form.ProjectTeamForm.ProjectResponse;
 import team.project.Dto.CreateProjectDto;
 import team.project.Entity.Progress;
-import team.project.Entity.TeamEntity.Calendar;
 import team.project.Entity.TeamEntity.JoinTeam;
 import team.project.Entity.Member;
 import team.project.Entity.TeamEntity.Project;
-import team.project.Repository.CalendarRepository;
+import team.project.Repository.Team.CalendarRepository;
 import team.project.Service.ArgumentResolver.Login;
 import team.project.Service.ProjectService;
 

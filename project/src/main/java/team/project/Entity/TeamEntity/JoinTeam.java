@@ -1,6 +1,7 @@
 package team.project.Entity.TeamEntity;
 
 import lombok.Getter;
+import team.project.Entity.BaseEntity;
 import team.project.Entity.DeveloperRole;
 import team.project.Entity.Member;
 
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-public class JoinTeam {
+public class JoinTeam extends BaseEntity{
 
     @Id @GeneratedValue
     @Column(name = "join_team_id")

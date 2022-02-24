@@ -27,7 +27,8 @@
                     <div style="font-size : 25px; font-weight: bold; " class="mb-2" th:text="*{title}"></div>
                     <div class="d-flex pb-2 justify-content-between" style="border-bottom : 5px solid #eeeeee;">
                         <div class="text-muted">
-                            <span class="ms-1 me-1" th:text="*{category.getExplain()}"></span>
+                            <span class="ms-1 me-1" th:if="${content.notice}">공지사항</span>
+                            <span class="ms-1 me-1" th:unless="${content.notice}">전체</span>
                             | <span class="ms-1 me-1 fromNow" th:text="*{createDate}"></span>
                             | <span class="ms-1 me-1">
                                 <i class="bi bi-person-fill"></i>
@@ -47,7 +48,7 @@
                 </div>
                 <div class="mb-3 mt-3 ">
                     <form method="post" th:object="${commentForm}"
-                        th:action="@{/teams/} + ${teamId} + @{/projects/bbs/} + ${projectId} + @{/} + ${content.contentId} + @{/comments}">
+                        th:action="@{/teams/} + ${teamId} + @{/bbs/free/} + ${content.contentId} + @{/comments}">
                         <textarea id="comment_text" name="comment" th:field="*{content}"></textarea>
                         <div class="text-end  mt-2">
                             <button type="submit" class="btn btn-sm btn-dark">댓글달기</button>
@@ -102,22 +103,22 @@
                         trigger: 'click',
                         content : `
                             <div>
-                                <div class="p-1 mb-1 fw-bold"><a href="/teams/${teamId}/projects/bbs/${projectId}/${contentId}/edit">수정</a></div>
-                                <div class="p-1 mb-1 text-danger" id="deleteContent">삭제</div>
+                                <div class="p-1 mb-1 fw-bold"><a href="/teams/${teamId}/bbs/free/${contentId}/edit">수정</a></div>
+                                <div class="p-1 mb-1 text-danger" id="deleteContent" style="cursor:pointer">삭제</div>
                             </div>
                         `,
                         html : true
                     });
-
                     $("#popover_controller").on("shown.bs.popover", ()=>{
                         $("#deleteContent").on("click", ()=>{
                             const form = document.createElement("form");
-                            form.action = `/teams/${teamId}/projects/bbs/${projectId}/${contentId}/delete`;
+                            form.action = `/teams/${teamId}/bbs/free/${contentId}/delete`;
                             form.method = "post";
                             document.body.append(form);
                             form.submit();
                         });
                     })
+                   
                 }
                 
 
@@ -127,20 +128,24 @@
                         trigger: 'click',
                         content : `
                             <div>
-                                <div class="p-1 mb-1 fw-bold" id="deleteComment-${commentsId}">수정</div>
-                                <div class="p-1 mb-1 text-danger">삭제</div>
+                                <div class="p-1 mb-1 fw-bold" id="updateComment-${commentsId}">수정</div>
+                                <div class="p-1 mb-1 text-danger" id="deleteComment-${commentsId}">삭제</div>
                             </div>
                         `,
                         html : true
                     });
 
                     $(ele).on('shown.bs.popover',  () => {
-                        var dc = document.getElementById("deleteComment-"+commentsId);      
-                        dc.addEventListener("click", (e)=>{ 
+                        var uc = document.getElementById("updateComment-"+commentsId);      
+                        uc.addEventListener("click", (e)=>{ 
                             if(ele.dataset.isupdate === "false"){
                                 editComment(commentsId, ele);
                                 ele.dataset.isupdate = "true";
                             }
+                        });
+                        var dc = document.getElementById("deleteComment-"+commentsId); 
+                        dc.addEventListener("click", (e)=>{
+                            deleteComment(commentsId);
                         });
                     })
                 });
@@ -169,7 +174,7 @@
                         }
                         $.ajax({
                             method : "POST",
-                            url : `/api/teams/${teamId}/comments/${commentsId}/edit`,
+                            url : `/api/teams/${teamId}/free/comments/${commentsId}/edit`,
                             data : JSON.stringify(data),
                             headers:{
                                 "Content-Type":"application/json",
@@ -204,6 +209,24 @@
                     ele.dataset.isupdate = false;
                 }
             }
+
+            function deleteComment(commentsId){
+                $.ajax({
+                    method : "POST",
+                    url : `/api/teams/${teamId}/comments/${commentsId}/delete`,
+                    headers:{
+                        "Content-Type":"application/json",
+                        "Authorization" : loginId
+                    },                   
+                    success : (res)=>{
+                        location.reload();
+                    },
+                    error : (e) => {
+                        alert(e.responseText);
+                    }
+                })
+            }
+
 
             $(".fromNow").each((index, ele)=>{
                 let fromNowDate = $(ele).text();

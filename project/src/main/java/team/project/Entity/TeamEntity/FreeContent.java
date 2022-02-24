@@ -11,9 +11,10 @@ import java.util.List;
 
 @Entity
 @Getter
-public class Content extends BaseEntity {
+public class FreeContent extends BaseEntity {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     @Column(name = "content_id")
     private Long id;
 
@@ -26,32 +27,30 @@ public class Content extends BaseEntity {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
-    private Project project;
+    @JoinColumn(name = "team_id")
+    private Team team;
 
-    @Enumerated(EnumType.STRING)
-    private Progress category;
+    private Boolean notice;
 
     @OneToMany(mappedBy = "content",cascade = CascadeType.ALL)
-    private List<Comments> comments = new ArrayList<>();
+    private List<FreeComments> comments = new ArrayList<>();
 
-    protected Content() {
+    protected FreeContent(){}
 
-    }
-
-    public Content(String title, String text) {
+    public FreeContent(String title, String text) {
         this.title = title;
         this.text = text;
     }
 
-    public void setProject(Project project){
-        this.project = project;
+    public void setTeam(Team team){
+        this.team = team;
     }
     public void setMember(Member member){
         this.member = member;
     }
-    public void setCategory(Progress category){
-        this.category = category;
+
+    public void setNotice(Boolean notice) {
+        this.notice = notice;
     }
 
     public void updateContent(String title, String text){

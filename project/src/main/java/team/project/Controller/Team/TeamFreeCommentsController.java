@@ -12,9 +12,10 @@ import team.project.Dto.Content.WriteCommentContentDto;
 import team.project.Entity.TeamEntity.Comments;
 import team.project.Entity.TeamEntity.FreeComments;
 import team.project.Entity.TeamEntity.JoinTeam;
-import team.project.Repository.Team.CommentsRepository;
+import team.project.Repository.Team.FreeCommentsRepository;
 import team.project.Service.ArgumentResolver.Login;
 import team.project.Service.CommentsService;
+import team.project.Service.FreeCommentsService;
 import team.project.Service.JoinTeamService;
 
 import javax.servlet.http.HttpServletResponse;
@@ -25,25 +26,13 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 @Slf4j
-public class TeamCommentsController {
+public class TeamFreeCommentsController {
 
-    private final CommentsService commentsService;
-    private final CommentsRepository commentsRepository;
+    private final FreeCommentsService commentsService;
     private final JoinTeamService joinTeamService;
+    private final FreeCommentsRepository freeCommentsRepository;
 
-    @PostMapping("/teams/{teamId}/projects/bbs/{projectId}/{contentId}/comments")
-    public String writeComment(
-            @ModelAttribute("commentForm") WriteCommentContentDto form, BindingResult bindingResult, @SessionAttribute("UID") Long memberId,
-            @PathVariable("contentId") Long contentId, @PathVariable("teamId") Long teamId, @PathVariable("projectId") Long projectId){
-
-        if(bindingResult.hasErrors()){
-            return "redirect:/teams/"+ teamId + "/projects/bbs/"+projectId+"/"+contentId;
-        }
-        commentsService.writeComments(form.getContent(), contentId, memberId);
-        return "redirect:/teams/"+ teamId + "/projects/bbs/"+projectId+ "/" +contentId;
-    }
-
-    @PostMapping("/api/teams/{teamId}/comments/{commentsId}/edit")
+    @PostMapping("/api/teams/{teamId}/free/comments/{commentsId}/edit")
     @ResponseBody
     public ResponseEntity<EditCommentsRequest> apiEditComment(
             @Login Long memberId, HttpServletResponse response, @PathVariable("teamId") Long teamId,
@@ -53,7 +42,7 @@ public class TeamCommentsController {
             response.sendError(HttpStatus.BAD_REQUEST.value(), "권한이 없습니다");
         }
 
-        Comments comments = commentsService.findFetchById(commentsId);
+        FreeComments comments = commentsService.findFetchById(commentsId);
         JoinTeam joinTeam = joinTeamService.findMemberAndTeamByMemberInTeam(memberId, teamId);
 
         if(!joinTeam.getTeam().getMember().getId().equals(memberId)){
@@ -62,35 +51,36 @@ public class TeamCommentsController {
             }
         }
 
-        commentsService.editComments(comments ,commentsRequest.getText());
+        commentsService.editFreeComments(comments ,commentsRequest.getText());
         EditCommentsRequest editCommentsRequest = new EditCommentsRequest(commentsRequest.getText());
         return new ResponseEntity<>(editCommentsRequest, HttpStatus.OK);
     }
 
-    @PostMapping("/teams/{teamId}/projects/bbs/free/{contentId}/comments")
+    @PostMapping("/teams/{teamId}/bbs/free/{contentId}/comments")
     public String writeComment(
             @ModelAttribute("commentForm") WriteCommentContentDto form, BindingResult bindingResult, @SessionAttribute("UID") Long memberId,
             @PathVariable("contentId") Long contentId, @PathVariable("teamId") Long teamId){
 
         if(bindingResult.hasErrors()){
-            return "redirect:/teams/"+ teamId + "/projects/bbs/free/"+contentId;
+            return "redirect:/teams/"+ teamId + "/bbs/free/"+contentId;
         }
-        commentsService.writeComments(form.getContent(), contentId, memberId);
-        return "redirect:/teams/"+ teamId + "/projects/bbs/" +contentId;
+        commentsService.writeFreeComments(form.getContent(), contentId, memberId);
+        return "redirect:/teams/"+ teamId + "/bbs/free/" +contentId;
     }
 
-    @PostMapping("/api/teams/{teamId}/projects/comments/{commentsId}/delete")
+
+    @PostMapping("/api/teams/{teamId}/comments/{commentsId}/delete")
     @ResponseBody
     public ResponseEntity deleteComment(
-            @SessionAttribute("UID") Long memberId,
-            @PathVariable("teamId") Long teamId,
-            @PathVariable("commentsId") Long commentsId
+        @SessionAttribute("UID") Long memberId,
+        @PathVariable("teamId") Long teamId,
+        @PathVariable("commentsId") Long commentsId
     ){
         JoinTeam joinTeam = joinTeamService.findMemberAndTeamByMemberInTeam(memberId, teamId);
-        Comments comments = commentsService.findFetchById(commentsId);
+        FreeComments comments = commentsService.findFetchById(commentsId);
         Map<String,Object> resultMap = new HashMap<>();
         if( joinTeam.getTeam().getMember().getId().equals(memberId) || comments.getMember().getId().equals(memberId) ){
-            commentsRepository.delete(comments);
+            freeCommentsRepository.delete(comments);
             resultMap.put("message", "댓글을 삭제했습니다");
             resultMap.put("status", HttpStatus.OK);
             return new ResponseEntity<>(resultMap,HttpStatus.OK);

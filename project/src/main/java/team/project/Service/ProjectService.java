@@ -7,9 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import team.project.Dto.CreateProjectDto;
 import team.project.Entity.*;
 import team.project.Entity.TeamEntity.*;
-import team.project.Repository.CalendarRepository;
-import team.project.Repository.ContentRepository;
-import team.project.Repository.ProjectMemberRepository;
+import team.project.Repository.Team.CalendarRepository;
+import team.project.Repository.Team.ContentRepository;
 import team.project.Repository.ProjectRepository;
 
 import java.time.LocalDateTime;
@@ -24,7 +23,6 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final TeamService teamService;
     private final JoinTeamService joinTeamService;
-    private final ProjectMemberRepository projectMemberRepository;
     private final CalendarRepository calendarRepository;
     private final ContentRepository contentRepository;
 
@@ -70,26 +68,6 @@ public class ProjectService {
         return project;
     }
 
-    @Transactional
-    public void addProjectMember(Long teamId ,Long projectId, Long... memberIds){
-        Project project = findById(projectId);
-
-        for (Long memberId : memberIds) {
-            JoinTeam joinTeam = joinTeamService.findByMemberInTeam(memberId, teamId);
-            if(!joinTeam.getJoinState().equals(JoinState.OK)){
-                throw new IllegalStateException("프로젝트 참여할 수 없습니다");
-            }
-            ProjectMember.createProject("참여자", joinTeam.getMember(), project);
-        }
-    }
-
-    @Transactional
-    public void projectMemberRoleChange(Long projectId, Long memberId, String role){
-        ProjectMember projectMember = projectMemberRepository.findByProjectIdAndMemberId(projectId, memberId).orElseThrow(() -> {
-            throw new IllegalStateException("해당 프로젝트 인원이 아닙니다");
-        });
-        projectMember.changeRole(role);
-    }
 
     @Transactional
     public void deleteProject(Long projectId){

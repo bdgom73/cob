@@ -8,8 +8,8 @@ import team.project.Entity.Member;
 import team.project.Entity.TeamEntity.Calendar;
 import team.project.Entity.TeamEntity.JoinTeam;
 import team.project.Entity.TeamEntity.Team;
-import team.project.Repository.CalendarRepository;
-import team.project.Repository.TeamRepository;
+import team.project.Repository.Team.CalendarRepository;
+import team.project.Repository.Team.TeamRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

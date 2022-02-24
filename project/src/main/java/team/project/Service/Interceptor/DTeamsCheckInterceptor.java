@@ -7,11 +7,12 @@ import org.springframework.web.servlet.*;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import team.project.CommonConst;
 import team.project.Dto.LoginMemberDto;
-import team.project.Entity.*;
-import team.project.Entity.TeamEntity.Project;
-import team.project.Entity.TeamEntity.Team;
+import team.project.Entity.Member;
+import team.project.Entity.Progress;
 import team.project.Entity.TeamEntity.JoinState;
 import team.project.Entity.TeamEntity.JoinTeam;
+import team.project.Entity.TeamEntity.Project;
+import team.project.Entity.TeamEntity.Team;
 import team.project.Service.JoinTeamService;
 import team.project.Service.ProjectService;
 
@@ -19,12 +20,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class TeamsUserCheckInterceptor implements HandlerInterceptor {
+public class DTeamsCheckInterceptor implements HandlerInterceptor {
 
     private final JoinTeamService joinTeamService;
     private final ProjectService projectService;
@@ -37,23 +41,18 @@ public class TeamsUserCheckInterceptor implements HandlerInterceptor {
         FlashMapManager fm = RequestContextUtils.getFlashMapManager(request);
         FlashMap flashMap = new FlashMap();
         Map<?,?> pathVariables = (Map<?,?>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-        log.info("team's authority check start [{}]", requestURI);
         if(uid == null){
             log.info("Not logged in [{}]", requestURI);
             return responseFlashMessage(request, response, fm, flashMap, "로그인 후 이용가능합니다","/login?redirectURI="+ request.getRequestURI());
         }
 
         String teamId = pathVariables.get("teamId").toString();
-        log.info("teamId = {}",teamId);
         request.setAttribute("teamId", teamId);
         if(teamId != null){
             try{
                 JoinTeam joinTeam = joinTeamService.findMemberAndTeamByMemberInTeam(uid, Long.parseLong(teamId));
-                log.info("Check the team's authority [{}]", requestURI);
                 request.setAttribute("postJoinTeam", joinTeam);
-                if(joinTeam.getJoinState().equals(JoinState.WAITING)){
-                    throw new IllegalStateException("아직 가입완료가 되지 않았습니다");
-                }else if(joinTeam.getJoinState().equals(JoinState.BAN)){
+                if(!joinTeam.getTeam().getMember().getId().equals(joinTeam.getMember().getId())){
                     throw new IllegalStateException("접근 권한이 없습니다");
                 }
                 request.setAttribute(CommonConst.CheckJoinTeam, joinTeam);

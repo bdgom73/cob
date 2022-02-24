@@ -7,8 +7,8 @@ import team.project.Entity.Member;
 import team.project.Entity.TeamEntity.OneLine;
 import team.project.Entity.TeamEntity.Team;
 import team.project.Repository.MemberRepository;
-import team.project.Repository.OneLineRepository;
-import team.project.Repository.TeamRepository;
+import team.project.Repository.Team.OneLineRepository;
+import team.project.Repository.Team.TeamRepository;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/headerV1 :: common_headerV1(~{::title},~{::link})">
+    <title>Cob - 테스트 템플릿</title>
+    <link th:href="@{/assets/css/home.css}"  rel="stylesheet" type="text/css" media="all">
+
+</head>
+<body th:fragment="manager_template(main, teamId)">
+<header th:replace="~{manager/fragment/managerTop :: manager_header(${team})}"></header>
+<div class="container-fluid bg-dark">
+    <div class="row">
+        <div th:replace="~{manager/fragment/managerNav :: manager_sidebar(${team.teamId})}"/>
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <th:block  th:replace="${main}"></th:block>
+        </main>
+    </div>
+</div>
+</body>
+</html>
