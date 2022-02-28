@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import team.project.CommonConst;
 import team.project.Dto.CreateScheduleDto;
 import team.project.Entity.TeamEntity.Calendar;
@@ -21,6 +22,8 @@ import team.project.Service.JoinTeamService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -76,12 +79,20 @@ public class TeamCalendarController {
     public String postCreateCalendarForm(
             @PathVariable("teamId") Long teamId ,
             @ModelAttribute("calendar") CalendarForm form, BindingResult bindingResult,
-            @RequestAttribute(CommonConst.CheckJoinTeam) JoinTeam joinTeam
+            @RequestAttribute(CommonConst.CheckJoinTeam) JoinTeam joinTeam,
+            RedirectAttributes attributes
     ){
 
         if(bindingResult.hasErrors()){
             log.info("bindingResult {}",bindingResult);
             return "redirect:/teams/"+teamId+"/calendar/create";
+        }
+
+        long period = form.getStart().toLocalDate().until(form.getEnd().toLocalDate(), ChronoUnit.DAYS);
+        if(period > 30L){
+            log.info("period error : {}", period);
+            attributes.addFlashAttribute("resultMsg","최대 30일까지 기간을 정할 수 있습니다 (현재 :" + period + ")");
+            return "redirect:/teams/"+teamId+"/calendar";
         }
 
         CreateScheduleDto createScheduleDto = new CreateScheduleDto(form.getGroupId(), form.getTitle(), form.getStart(), form.getEnd(),

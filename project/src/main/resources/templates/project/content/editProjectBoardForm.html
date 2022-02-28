@@ -27,18 +27,14 @@
                         <input type="text" class="form-control" id="name" th:field="*{title}" placeholder="Team name">
                     </div>
                     <div class="form-floating mb-3">
-                        <textarea id="editor" class="form-control" th:field="*{text}" style="min-height: 300px;"></textarea>
-                    </div>     
+                        <textarea  class="form-control" th:field="*{text}" style="min-height: 300px;"></textarea>
+                    </div>    
                     <button type="submit" class="btn btn-primary w-100">수정</button>
                 </form>
             </div>
         </section>
         <script th:inline="javascript">
-            ClassicEditor
-            .create( document.querySelector( '#editor' ) )
-            .catch( error => {
-                console.error( error );
-            } );
+            CKEDITOR.replace('text');
         </script>
     </main>
 </body>

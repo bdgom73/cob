@@ -47,8 +47,6 @@ calendarEl ,
     // **********EVENT********** //
     eventClick          : 
     (e)=>{
-        console.log(e.event.color);
-        console.log(e.event);
         const data = {
             ...e.event.extendedProps,
             groupId                     : e.event.groupId,

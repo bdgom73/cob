@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.*;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import team.project.CommonConst;
+import team.project.Controller.Form.TeamForm.TeamsResponse;
 import team.project.Dto.LoginMemberDto;
 import team.project.Entity.Member;
 import team.project.Entity.Progress;
@@ -95,6 +96,12 @@ public class DTeamsCheckInterceptor implements HandlerInterceptor {
                 Map<String, Object> resultMap = new HashMap<>();
                 resultMap.put("id",postTeam.getMember().getId());
                 modelAndView.addObject("teamLeader", resultMap);
+                TeamsResponse teamsResponse = new TeamsResponse(
+                        postTeam.getId(),postTeam.getName(),postTeam.getIntroduction(),
+                        postTeam.getMember().getId(),postTeam.getMember().getNickname(), postTeam.getMember().getName(), postTeam.getMember().getEmail(),
+                        postTeam.getCreatedDate(), postTeam.getModifiedDate()
+                );
+                modelAndView.addObject("team", teamsResponse);
             }
             if(postMember != null){
                 LoginMemberDto memberDto = new LoginMemberDto(postMember.getId(), postMember.getEmail(), postMember.getName(), postMember.getNickname());

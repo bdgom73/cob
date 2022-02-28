@@ -5,16 +5,13 @@
     <meta name="keywords" content="project,프로젝트,cob,씨오비,시오비,Cob,COB,Team,team">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" @th:href="@{/favicon.icon}">
+    <link rel="shortcut icon" th:href="@{/favicon.icon}">
     <title th:replace="${title}">Title</title>
 
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
     <link th:href="@{/assets/css/team.css}" rel="stylesheet" >
-
-    <!-- tingle -->
-    <link th:href="@{/assets/tingle/dist/tingle.min.css}" rel="stylesheet" >
-    <script th:src="@{/assets/tingle/dist/tingle.min.js}"></script>
-
+    
+    <link rel="stylesheet" th:href="@{/assets/css/ckeditor5.css}" type="text/css">
     <!-- jquery -->
     <script
     src="https://code.jquery.com/jquery-3.6.0.js"
@@ -40,6 +37,17 @@
     <!-- fullcalendar -->
     <script th:src="@{/assets/fullcalendar/lib/main.min.js}"></script>
     <script th:src="@{/assets/fullcalendar/lib/locales/ko.js}"></script> 
+
+    <!-- tingle -->
+    <link th:href="@{/assets/tingle/dist/tingle.min.css}" rel="stylesheet" >
+    <script th:src="@{/assets/tingle/dist/tingle.min.js}"></script>
+
+    <script src="/assets/js/ckeditor/ckeditor.js"></script>
+
+    <!--  highlight  -->
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
 
     <th:block th:replace="${links}" />
 </head>

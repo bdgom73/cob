@@ -30,7 +30,7 @@
         </div>
     </section>
      <!--  삭제Modal  -->
-    <div th:replace="team/modal/deleteTeamModal :: delete_team(${team})"></div>
+    <div th:replace="team/modal/deleteTeamModal :: delete_team(${team})" style="color : #222222"></div>
 
     <script th:inline="javascript">
         document.addEventListener("DOMContentLoaded",()=>{   
@@ -42,10 +42,10 @@
                 resultMsgModal.open();
             }
         });
-       const dtb = document.getElementById('delete-team-modal');
+        const dtb = document.getElementById('delete-team-modal');
         if(dtb){
             let deleteTeamModal = new bootstrap.Modal(dtb, {
-                keyboard: false
+                keyboard: false,
             });
             document.getElementById('delete-team-bt').addEventListener("click", ()=>{
                 deleteTeamModal.show();

@@ -30,4 +30,7 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
     @Query("SELECT c FROM Content c JOIN FETCH c.member m JOIN FETCH c.project p WHERE c.id = :contentId")
     Optional<Content> findFetchMemberAndProjectById(@Param("contentId") Long id);
 
+    @Query("SELECT c FROM Content c JOIN FETCH c.member m JOIN FETCH c.project p WHERE c.category = :category AND c.project.id = :projectId")
+    List<Content> findAllByCategory(@Param("projectId") Long projectId ,@Param("category") Progress progress);
+
 }

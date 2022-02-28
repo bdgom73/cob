@@ -16,7 +16,7 @@
             <hr>
             <div class=" p-1 shadow rounded bg-body" style="margin : 0 auto; max-width : 1200px">
                 <form th:action method="POST" th:object="${board}" style="min-width : 200px; margin: 0 auto">     
-                    <div class="form-check form-switch mt-3">   
+                    <div class="form-check form-switch mt-3" th:if="${loginMember.memberId == teamLeader.id}">    
                         <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" th:field="*{notice}">
                         <label class="form-check-label" for="flexSwitchCheckDefault">공지사항</label>  
                     </div>
@@ -25,18 +25,14 @@
                         <input type="text" class="form-control" id="name" th:field="*{title}" placeholder="Team name">
                     </div>
                     <div class="form-floating mb-3">
-                        <textarea id="editor" class="form-control" th:field="*{text}" style="min-height: 300px;"></textarea>
+                        <textarea  class="form-control" th:field="*{text}" style="min-height: 300px;"></textarea>
                     </div>     
                     <button type="submit" class="btn btn-primary w-100">수정</button>
                 </form>
             </div>
         </section>
         <script th:inline="javascript">
-            ClassicEditor
-            .create( document.querySelector( '#editor' ) )
-            .catch( error => {
-                console.error( error );
-            } );
+            CKEDITOR.replace('text');
         </script>
     </main>
 </body>

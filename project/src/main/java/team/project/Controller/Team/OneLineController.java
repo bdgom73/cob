@@ -15,6 +15,7 @@ import team.project.Entity.Member;
 import team.project.Entity.TeamEntity.JoinTeam;
 import team.project.Entity.TeamEntity.OneLine;
 import team.project.Entity.TeamEntity.Team;
+import team.project.Repository.Team.OneLineRepository;
 import team.project.Service.OneLineService;
 
 import javax.persistence.*;
@@ -24,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -32,6 +34,7 @@ import java.util.stream.Collectors;
 public class OneLineController {
 
     private final OneLineService oneLineService;
+    private final OneLineRepository oneLineRepository;
 
     @GetMapping("/teams/{teamId}/oneday")
     public String oneDay(Model model, @PathVariable("teamId") Long teamId, @RequestParam(value = "date",defaultValue = "#{T(java.time.LocalDate).now()}") LocalDate date){
@@ -61,6 +64,27 @@ public class OneLineController {
             return "redirect:/teams/"+teamId+"/oneday";
         }
         oneLineService.writeOneLine(form.getText(),joinTeam.getTeam(), joinTeam.getMember() );
+        return "redirect:/teams/"+teamId+"/oneday";
+    }
+
+    @PostMapping("/teams/{teamId}/oneday/{oneLineId}/delete")
+    public String deleteOneDay(
+            @PathVariable("teamId") Long teamId,
+            @PathVariable("oneLineId") Long oneLineId,
+            @RequestAttribute(CommonConst.CheckJoinTeam) JoinTeam joinTeam,
+            @SessionAttribute("UID") Long memberId
+    ){
+
+        Optional<OneLine> findOneLine = oneLineRepository.findMemberById(oneLineId);
+
+        if(findOneLine.isEmpty()){
+            return "redirect:/teams/"+teamId+"/oneday";
+        }
+
+        if(joinTeam.getTeam().getMember().getId().equals(memberId) || findOneLine.get().getMember().getId().equals(memberId)){
+            oneLineRepository.delete(findOneLine.get());
+        }
+
         return "redirect:/teams/"+teamId+"/oneday";
     }
 

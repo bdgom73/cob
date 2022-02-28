@@ -52,8 +52,8 @@
             </a>
         </h6>
         <ul class="nav flex-column mb-2">
-            <li class="nav-item" th:each="project : ${endProjectNav}">
-                <a class="nav-link" th:href="@{/teams/} + ${teamId} + @{/project/} + ${project.projectId}">
+            <li class="nav-item" th:each="project : ${endProjectNav}" th:object="${project}">
+                <a class="nav-link" th:href="@{/teams/} + ${teamId} + @{/projects/} + ${project.projectId}">
                     <span data-feather="file-text"></span>
                     <th:block th:text="*{projectName}"></th:block>
                 </a>

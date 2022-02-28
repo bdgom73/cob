@@ -20,7 +20,7 @@ public class StatJoinTeamRepositoryImpl implements StatJoinTeamRepository{
 
     @Override
     public List<StatCount> findByStatDate(LocalDate date, Long teamId) {
-        String query = "SELECT new team.project.Repository.StatCount(";
+        String query = "SELECT new team.project.Repository.Team.StatCount(";
         query += " SUBSTRING(j.createdDate,0,7) ,";
         query += " count(j)";
         query += " ) FROM JoinTeam j";

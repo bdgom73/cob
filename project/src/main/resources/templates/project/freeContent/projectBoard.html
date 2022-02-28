@@ -13,7 +13,10 @@
             }
         </style>
         <section class="p-1">
-            <div class="col-md-auto p-3 ">              
+            <div class="col-md-auto p-3 ">    
+                <div class="mb-3">
+                    <a th:href="@{/teams/} + ${teamId} + @{/bbs/free/create}" class="btn btn-outline-primary btn-sm">글쓰기</a>
+                </div>          
                 <table class="table table-grid">      
                     <thead>
                         <tr>
@@ -24,7 +27,10 @@
                         </tr>
                     </thead> 
                     <tbody>
-                        <tr th:each="content : ${contents}" th:object="${content}">
+                        <tr th:if="${#lists.size(contents) <= 0}">
+                            <td colspan="4" class="text-center">게시글이 없습니다</td>
+                        </tr>
+                        <tr th:unless="${#lists.size(contents) <= 0}" th:each="content : ${contents}" th:object="${content}">
                             <td class="content-grid-contentId" th:text="*{contentId}"></td>           
                             <td class="content-grid-title" >
                                 <span th:if="${content.notice}" class="badge bg-danger">공지사항</span>
@@ -43,7 +49,9 @@
             document.addEventListener("DOMContentLoaded",()=>{
                 let resultMsg = '[(${resultMsg})]';
                 if(resultMsg){
-                    alert(resultMsg);
+                    let resultMsgModal = new tingle.modal();
+                    resultMsgModal.setContent(`<span class="text-danger text-center fw-bold">${resultMsg}</span>`);
+                    resultMsgModal.open();
                 }
             });   
           

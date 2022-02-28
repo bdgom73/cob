@@ -69,6 +69,14 @@ public class ContentService {
         return contentRepository.findOrderByProjectId(projectId, order, pageable);
     }
 
+    public List<Content> findAllByProjectAndCategory(Long projectId, Progress progress){
+        if(progress.equals(Progress.All)){
+            return contentRepository.findByProjectId(projectId);
+        }else{
+            return contentRepository.findAllByCategory(projectId, progress);
+        }
+
+    }
 
     private Content createContent(CreateContentDto contentDto, Project project, Member member) {
         Content content = new Content(contentDto.getTitle(), contentDto.getText());

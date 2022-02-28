@@ -191,10 +191,10 @@ public class TeamProjectBoardController {
             if(content.getMember().getId().equals(memberId) || joinTeam.getTeam().getMember().getId().equals(memberId)){
                 contentRepository.delete(content);
                 attributes.addFlashAttribute("resultMsg","해당 게시글을 삭제했습니다");
+                return "redirect:/teams/"+ teamId +"/projects/bbs/"+projectId;
             }else{
                 throw new IllegalStateException("삭제 권한이 없습니다");
             }
-            return "redirect:/teams/"+ teamId +"/projects/bbs/"+projectId;
         }catch (Exception e){
             attributes.addFlashAttribute("resultMsg",e.getMessage());
             return "redirect:/teams/"+ teamId +"/projects/bbs/"+projectId;

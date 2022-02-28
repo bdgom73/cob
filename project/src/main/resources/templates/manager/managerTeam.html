@@ -8,8 +8,9 @@
     <main>
         <section>
             <div class=" mt-3 p-3 bg-dark text-light">
-                <h4>팀관리</h4>
-                <form th:action="@{/@teams/} + ${teamId} + @{/edit}" method="post" th:object="${team}" style="margin: 0 auto">
+                <h4 class="mb-2">팀관리</h4>
+                <hr/>
+                <form th:action="@{/@teams/} + ${teamId} + @{/edit}" method="post" th:object="${teamForm}" style="margin: 0 auto">
                     <div class="mb-3">
                         <label for="name">팀명</label>
                         <input type="text" id="name" th:field="*{name}" placeholder="Team name">
@@ -21,17 +22,32 @@
                         <div th:error="*{introduction}"/>
                     </div>
 
-                    <button type="submit" class="btn btn-light">변경</button>
+                    <button type="submit">변경</button>
+                    <button type="button" class=" me-1 ms-1" id="delete-team-bt">해체</button>
                 </form>
             </div>
+            
             <hr/>
             <div class=" mt-3 p-3 bg-dark text-light">
-                <h4>가입신청현황</h4>
+                <h4 class="mb-2">가입신청현황</h4>
                 <canvas id="statChart" style="width: 100%;" height="400"></canvas>
             </div>
+            <!--  삭제Modal  -->
+            <div th:replace="manager/modal/deleteTeamModal :: delete_team(${team})"></div>
         </section>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script th:inline="javascript">
+
+
+            const dtb = document.getElementById('delete-team-modal');
+                if(dtb){
+                    let deleteTeamModal = new bootstrap.Modal(dtb, {
+                        keyboard: false
+                    });
+                    document.getElementById('delete-team-bt').addEventListener("click", ()=>{
+                        deleteTeamModal.show();
+                    });        
+                }
             const current = moment().format("yyyy-MM");
             const currentm1 = moment().subtract(1,'months').format("yyyy-MM");
             const currentm2 = moment().subtract(2,'months').format("yyyy-MM");

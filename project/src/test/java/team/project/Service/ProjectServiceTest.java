@@ -82,8 +82,6 @@ class ProjectServiceTest {
         teamService.applyTeam(team.getId(), member2.getId());
         teamService.doAccept(team.getId(), member2.getId());
 
-        System.out.println("============================START================================== ");
-        projectService.addProjectMember(team.getId(),projectId, member.getId(), member2.getId());
     }
 
 

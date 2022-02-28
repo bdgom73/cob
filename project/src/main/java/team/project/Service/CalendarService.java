@@ -67,7 +67,7 @@ public class CalendarService {
         int end = calendar.getActualMaximum(java.util.Calendar.DAY_OF_MONTH);
         LocalDateTime startDate = LocalDate.of(year, month, 1).atTime(0,0,0);
         LocalDateTime endDate = LocalDate.of(year, month, end).atTime(0,0,0);
-        return calendarRepository.findAllByTeamAndStartDateBetween(team,startDate, endDate);
+        return calendarRepository.findAllByTeamRangeDate(team,startDate, endDate);
     }
 
     public List<Calendar> monthSchedule(int year , int month, Team team){
@@ -76,17 +76,17 @@ public class CalendarService {
         int end = calendar.getActualMaximum(java.util.Calendar.DAY_OF_MONTH);
         LocalDateTime startDate = LocalDate.of(year, month, 1).atTime(0,0,0);
         LocalDateTime endDate = LocalDate.of(year, month, end).atTime(0,0,0);
-        return calendarRepository.findAllByTeamAndStartDateBetween(team, startDate, endDate);
+        return calendarRepository.findAllByTeamRangeDate(team, startDate, endDate);
     }
 
     public List<Calendar> rangeSchedule(LocalDateTime start , LocalDateTime end , Team team){
-        return calendarRepository.findAllByTeamAndStartDateBetween(team, start, end);
+        return calendarRepository.findAllByTeamRangeDate(team, start, end);
     }
 
     public List<Calendar> rangeSchedule(LocalDateTime start , LocalDateTime end , Long teamId){
         Optional<Team> findTeam = teamRepository.findById(teamId);
         Team team = findTeam.get();
-        return calendarRepository.findAllByTeamAndStartDateBetween(team, start, end);
+        return calendarRepository.findAllByTeamRangeDate(team, start, end);
     }
 
     public Calendar findSchedule(Long calendarId){

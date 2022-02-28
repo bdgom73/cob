@@ -33,9 +33,16 @@
                         <th:block th:if="${#strings.toString(param.state) == 'WAITING'}">신청일</th:block>
                         <th:block th:if="${#strings.toString(param.state) == 'BAN'}">제한일</th:block>
                     </th>
-                    <th th:if="${loginMember.memberId == teamLeader.id}">변경</th>
+                    <th>변경</th>
                 </tr>
-                <tr th:each=" member : ${joinTeams}" >
+                <tr th:if="${#lists.size(joinTeams) <= 0}">
+                    <td colspan="4" class="text-center">
+                        <th:block th:if="${#strings.toString(param.state) == 'OK' || #strings.toString(param.state) == '' || #strings.toString(param.state) == null}">가입인원이 없습니다</th:block>
+                        <th:block th:if="${#strings.toString(param.state) == 'WAITING'}">신청인원이 없습니다</th:block>
+                        <th:block th:if="${#strings.toString(param.state) == 'BAN'}">차단인원이 없습니다</th:block>
+                    </td>
+                </tr>
+                <tr th:each=" member : ${joinTeams}"  th:unless="${#lists.size(joinTeams) <= 0}">
                     <td th:if="${member.memberId == team.leaderId}">
                         <span class="badge bg-primary">팀장</span>
                         <th:block th:text="${member.memberNickname}"></th:block>
@@ -45,7 +52,7 @@
                     </td>
                     <td th:text="${member.joinState.getState()}"></td>
                     <td th:text="${#temporals.format(member.joinDate,'yyyy-MM-dd HH시 mm분')}"></td>
-                    <td th:if="${loginMember.memberId == teamLeader.id}">
+                    <td>
                         <div >
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#team_state_modal">변경</button>
                         </div>

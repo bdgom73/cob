@@ -136,22 +136,10 @@ public class TeamController {
             Model model,
             @PathVariable("teamId") Long teamId,
             RedirectAttributes redirectAttributes,
-            @RequestParam(value = "state", defaultValue = "OK") String state,
             @RequestAttribute(CommonConst.CheckJoinTeam) JoinTeam joinTeam
     ){
-        state = state.toUpperCase();
         try{
-            List<JoinMemberResponse> resultList;
-            if(JoinState.valueOf(state) == JoinState.WAITING){
-                resultList = joinTeamService.JoinTeamToResultList(teamId, JoinState.WAITING);
-            }else if(JoinState.valueOf(state) == JoinState.BAN){
-                if(!Objects.equals(joinTeam.getTeam().getMember().getId(), joinTeam.getMember().getId())){
-                    throw new IllegalArgumentException();
-                }
-                resultList = joinTeamService.JoinTeamToResultList(teamId, JoinState.BAN);
-            }else{
-                resultList = joinTeamService.JoinTeamToResultList(teamId, JoinState.OK);
-            }
+            List<JoinMemberResponse> resultList = joinTeamService.JoinTeamToResultList(teamId, JoinState.OK);
 
             Map<String , Object> resultTeam = new HashMap<>();
             resultTeam.put("teamId", joinTeam.getTeam().getId());

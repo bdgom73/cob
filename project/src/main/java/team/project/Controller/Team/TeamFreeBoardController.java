@@ -17,7 +17,6 @@ import team.project.Dto.Content.FreeCreateContentDto;
 import team.project.Dto.Content.UpdateFreeContentDto;
 import team.project.Dto.Content.WriteCommentContentDto;
 import team.project.Entity.Member;
-import team.project.Entity.Progress;
 import team.project.Entity.TeamEntity.*;
 import team.project.Repository.Team.FreeContentRepository;
 import team.project.Service.*;

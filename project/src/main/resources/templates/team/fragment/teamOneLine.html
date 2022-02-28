@@ -36,9 +36,15 @@
         <div class="mt-3 mb-3 ">
             <span class="text-muted  p-3 text-center" th:if="${#lists.size(oneLines) <= 0}">하루 한줄이 없습니다.</span>
             <div th:unless="${#lists.size(oneLine) <= 0}" th:each="oneLine : ${oneLines}" th:object="${oneLine}">
-                <div class="mb-2">
-                    <span th:text="*{memberNickname}" class="me-2 fw-bold "></span>
-                    <span th:attr="data-cu-date=*{createDate}" th:text="*{createDate}" class="text-secondary oneLine-createDate" style="font-size: 12px;"> </span>
+                <div class="mb-2 d-flex justify-content-between">
+                    <div>
+                        <span th:text="*{memberNickname}" class="me-2 fw-bold "></span>
+                        <span th:attr="data-cu-date=*{createDate}" th:text="*{createDate}" class="text-secondary oneLine-createDate" style="font-size: 12px;"> </span>
+                    </div>
+                    <div th:if="${(loginMember.memberId == oneLine.memberId) || (loginMember.memberId == teamLeader.id)}">     
+                        <i style="cursor: pointer;" class="bi bi-three-dots-vertical" id="popover_controller" 
+                            th:attr="data-onelineid=*{oneLineId}"></i>
+                    </div>
                 </div>
                 <p th:utext="*{text}" style="max-height: 100px; overflow-y: auto; padding-left: 10px;"></p>
             </div>
@@ -56,6 +62,33 @@
         </form>
     </section>
     <script th:inline="javascript">  
+        const teamId = [[${teamId}]];
+
+        document.querySelectorAll('#popover_controller').forEach((ele,index)=>{
+            const oneLineId = ele.dataset.onelineid;
+            new bootstrap.Popover(ele, {           
+                trigger: 'click',
+                content : `
+                    <div>
+                        <div class="p-1 mb-1 fw-bold" id="deleteOneLine-${oneLineId}">삭제</div>
+                    </div>
+                `,
+                html : true
+            });
+
+            $(ele).on('shown.bs.popover',  () => {
+                var dc = document.getElementById("deleteOneLine-"+oneLineId);      
+                dc.addEventListener("click", (e)=>{ 
+                    const form = document.createElement("form");
+                    form.action = `/teams/${teamId}/oneday/${oneLineId}/delete`;
+                    form.method = "POST"
+                    document.body.append(form);
+                    form.submit();
+                });
+            })
+        });
+
+
         ClassicEditor
         .create( document.querySelector( '#editor' ),{
             toolbar: [ 'bold', 'italic', 'link',  'numberedList', 'bulletedList','undo', 'redo'],

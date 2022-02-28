@@ -13,7 +13,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CalendarRepository extends JpaRepository<Calendar, Long> {
-    List<Calendar> findAllByTeamAndStartDateBetween(Team team, LocalDateTime start, LocalDateTime end);
+
+    @Query("SELECT c FROM Calendar c WHERE c.startDate BETWEEN :start AND :end OR c.endDate BETWEEN :start AND :end  AND c.team = :team ")
+    List<Calendar> findAllByTeamRangeDate(@Param("team") Team team,@Param("start") LocalDateTime start,@Param("end") LocalDateTime end);
 
     List<Calendar> findByGroupId(Long groupId);
 
