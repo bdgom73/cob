@@ -15,11 +15,30 @@
             }
           
         </style>
-        <section>
+        <section>         
             <div class=" mt-3 p-3 bg-dark text-light">
                 <h4 class="mb-2">게시글관리</h4>
-                <form>
-                    <input type="hidden" name="bbsType" th:value="${boardType}">
+                <div class="row">
+                    <div class="col">
+                        <select class="form-select" id="board-type-controller">
+                            <option value="free">free</option>
+                            <option th:each="val : ${projectNav}" th:text="${val.projectName}" th:value="${val.projectId}"></option>
+                            <option th:each="val : ${endProjectNav}" th:text="${val.projectName}" th:value="${val.projectId}"></option>
+                        </select>     
+                    </div>
+                    <div class="col">
+                        <select class="form-select" id="board-category-controller">
+                            <option th:each="val : ${T(team.project.Entity.Progress).values()}" th:text="${val.getExplain()}" th:value="${val}"></option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-outline-light" id="board-controller-search">검색</button>
+                    </div>
+                </div>
+                <p th:text="${statDate}"></p>
+                <form th:action="|/@teams/${teamId}/bbs/delete|" method="post" onsubmit="return confirm('정말로 삭제하시겠습니까?')">
+                    <input type="hidden" name="bbsType" th:value="${boardType}">  
+                    
                     <table class="table text-light">
                         <thead>
                             <tr>
@@ -36,6 +55,7 @@
                         </thead>
                         <tbody>
                             <tr th:if="${#lists.size(boards) >= 0}" th:each="bbs, bbsVal : ${boards}" th:object="${bbs}" >
+                                
                                 <td>
                                     <div class="form-check">
                                         <input type="checkbox" id="bbsCheck" th:name="contentId" th:value="*{contentId}" class="form-check-input">
@@ -44,7 +64,7 @@
                                 <td th:text="${bbsVal.index+1}"></td>
                                 <td>
                                     <span class="link-warning" th:text="*{title}" style="cursor: pointer;" 
-                                    th:onclick="javascript:detailBoard([[${bbs.text}]])"></span>
+                                    th:onclick="javascript:detailBoard([[${bbs.text}]], [[${bbs.contentId}]], [[${bbs.projectId}]])"></span>
                                     <span class="badge bg-light text-dark" th:text="*{count}"></span>
                                 </td>
                                 <td th:text="*{memberName}"></td>
@@ -53,27 +73,51 @@
                                     <th:block th:text="${#temporals.format(bbs.modifiedDate, 'yyyy-MM-dd HH:mm:ss')}" ></th:block>
                                 </td>
                             </tr>
+                            <tr th:if="${#lists.size(boards) <= 0}">
+                               <td colspan="5" class="text-center">게시글이 존재하지 않습니다</td>
+                            </tr>
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="5">
+                                    <button type="submit" class="btn btn-danger">삭제</button>
+                                </td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </form>
-            </div>
-            
-            <hr/>
+            </div>  
+            <hr/>  
             <div class=" mt-3 p-3 bg-dark text-light">
-                <h4 class="mb-2">가입신청현황</h4>
-                <canvas id="statChart" style="width: 100%;" height="400"></canvas>
+                <h4 class="mb-2">프로젝트 게시물</h4>
+                <canvas id="contentStatChart" style="width: 100%;" height="400"></canvas>                 
             </div>
-            
+            <div class=" mt-3 p-3 bg-dark text-light">
+                <h4 class="mb-2">자유 게시물</h4>
+                <canvas id="freeContentStatChart" style="width: 100%;" height="400"></canvas>
+            </div>      
         </section>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script th:inline="javascript">
+            const teamId = [[${teamId}]];
+            const contentStatDate = [[${contentStatDate}]];
+            const freeContentStatDate = [[${freeContentStatDate}]];
+            const boardType = [[${boardType}]];
 
-            function detailBoard(content){
+            function detailBoard(content,contentId,projectId){
                 let detailModal = new tingle.modal();
                 const div = document.createElement("div");
                 div.className = "ck-content";
-                div.innerHTML = content ? content : "내용이없습니다";
-        
+                
+                let _html = content ? content : "내용이 없습니다.";
+                if(projectId == 0){
+                    _html += `<div><a href="/teams/${teamId}/bbs/free/${contentId}">바로가기</a></div>`
+                }else{
+                    _html += `<div><a href="/teams/${teamId}/projects/bbs/${projectId}/${contentId}">바로가기</a></div>`
+                }
+                div.innerHTML = _html ;
+                
+               
                 detailModal.setContent(div);
                 detailModal.open();
                 hljs.highlightAll();
@@ -85,61 +129,89 @@
                     element.checked = e.target.checked ;
                 });
             });
-          
-            // const current = moment().format("yyyy-MM");
-            // const currentm1 = moment().subtract(1,'months').format("yyyy-MM");
-            // const currentm2 = moment().subtract(2,'months').format("yyyy-MM");
-            // const currentm3 = moment().subtract(3,'months').format("yyyy-MM");
-            // const currentm4 = moment().subtract(4,'months').format("yyyy-MM");
-            // const currentm5 = moment().subtract(5,'months').format("yyyy-MM");
-        
-            // const data = [[${statDate}]];
+            
+            function bbsSearchInit(){
+                const typeSel =  document.querySelector("#board-type-controller");
+                const categorySel =  document.querySelector("#board-category-controller");
+                document.querySelector("#board-controller-search").addEventListener("click", ()=>{            
+                    if(typeSel.value == "free"){
+                        location.href=`?bbs=free`;
+                    }else{
+                        location.href=`?bbs=project&projectId=${typeSel.value}&category=${categorySel.value}`;
+                    }
+                });
 
-            // const _data = {   
-            //     [currentm5] : data[currentm5] ? data[currentm5] : 0,
-            //     [currentm4] : data[currentm4] ? data[currentm4] : 0,
-            //     [currentm3] : data[currentm3] ? data[currentm3] : 0,
-            //     [currentm2] : data[currentm2] ? data[currentm2] : 0,
-            //     [currentm1] : data[currentm1] ? data[currentm1] : 0, 
-            //     [current] : data[current] ? data[current] : 0,
-            // }
+                const URLSearch = new URLSearchParams(location.search);
+                const bbs = URLSearch.get("bbs");
+                const pid = URLSearch.get("projectId");
+                const cat = URLSearch.get("category");
+            
+                if(bbs == "project"){
+                    $(typeSel).val(pid).prop("selected",true);
+                    $(categorySel).val(cat).prop("selected",true);
+                }else{  
+                    $(typeSel).val("free").prop("selected",true);
+                }
+            }
 
-            // const ctx = document.getElementById('statChart').getContext('2d');
-            // const myChart = new Chart(ctx, {
-            //     type: 'line',
-            //     data: {
-            //         labels: Object.keys(_data),
-            //         datasets: [{
-            //             label: '가입신청수',
-            //             data: Object.values(_data),
-            //             backgroundColor: [
-            //                 'rgba(255, 99, 132, 0.2)',
-            //                 'rgba(54, 162, 235, 0.2)',
-            //                 'rgba(255, 206, 86, 0.2)',
-            //                 'rgba(75, 192, 192, 0.2)',
-            //                 'rgba(153, 102, 255, 0.2)',
-            //                 'rgba(255, 159, 64, 0.2)'
-            //             ],
-            //             borderColor: [
-            //                 'rgba(255, 99, 132, 1)',
-            //                 'rgba(54, 162, 235, 1)',
-            //                 'rgba(255, 206, 86, 1)',
-            //                 'rgba(75, 192, 192, 1)',
-            //                 'rgba(153, 102, 255, 1)',
-            //                 'rgba(255, 159, 64, 1)'
-            //             ],
-            //             borderWidth: 1
-            //         }]
-            //     },
-            //     options: {
-            //         scales: {
-            //             y: {
-            //                 beginAtZero: true,
-            //                 max : Math.max(...Object.values(_data)) > 0 ?  Math.max(...Object.values(_data))* 2 : 2
-            //             }
-            //         }
-            //     }
-            // });
+            bbsSearchInit();
+
+            function graphDate(eid, data){
+                const current = moment().format("yyyy-MM");
+                const currentm1 = moment().subtract(1,'months').format("yyyy-MM");
+                const currentm2 = moment().subtract(2,'months').format("yyyy-MM");
+                const currentm3 = moment().subtract(3,'months').format("yyyy-MM");
+                const currentm4 = moment().subtract(4,'months').format("yyyy-MM");
+                const currentm5 = moment().subtract(5,'months').format("yyyy-MM");
+            
+                const _data = {   
+                    [currentm5] : data[currentm5] ? data[currentm5] : 0,
+                    [currentm4] : data[currentm4] ? data[currentm4] : 0,
+                    [currentm3] : data[currentm3] ? data[currentm3] : 0,
+                    [currentm2] : data[currentm2] ? data[currentm2] : 0,
+                    [currentm1] : data[currentm1] ? data[currentm1] : 0, 
+                    [current] : data[current] ? data[current] : 0,
+                }
+
+                const ctx = document.getElementById(eid).getContext('2d');
+                const myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: Object.keys(_data),
+                        datasets: [{
+                            label: '게시글',
+                            data: Object.values(_data),
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max : Math.max(...Object.values(_data)) <= 1 ? 10 : Math.max(...Object.values(_data)) *2 
+                            }
+                        }
+                    }
+                });
+            }
+            graphDate("contentStatChart",contentStatDate);  
+            graphDate("freeContentStatChart",freeContentStatDate);  
         </script>
     </main>
 </body>

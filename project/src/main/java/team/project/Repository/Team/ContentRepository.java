@@ -6,11 +6,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import team.project.Entity.Progress;
 import team.project.Entity.TeamEntity.Content;
+import team.project.Repository.Team.ContentStat.StatContentRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface ContentRepository extends JpaRepository<Content, Long> {
+public interface ContentRepository extends JpaRepository<Content, Long> , StatContentRepository {
 
     @Query("SELECT c FROM Content c WHERE c.project.id = :projectId")
     List<Content> findByProjectId(@Param("projectId") Long projectId);

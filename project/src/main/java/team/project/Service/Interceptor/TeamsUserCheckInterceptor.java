@@ -14,6 +14,7 @@ import team.project.Entity.TeamEntity.JoinState;
 import team.project.Entity.TeamEntity.JoinTeam;
 import team.project.Service.JoinTeamService;
 import team.project.Service.ProjectService;
+import team.project.Service.TeamService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,6 +29,7 @@ public class TeamsUserCheckInterceptor implements HandlerInterceptor {
 
     private final JoinTeamService joinTeamService;
     private final ProjectService projectService;
+    private final TeamService teamService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
@@ -42,8 +44,20 @@ public class TeamsUserCheckInterceptor implements HandlerInterceptor {
             log.info("Not logged in [{}]", requestURI);
             return responseFlashMessage(request, response, fm, flashMap, "로그인 후 이용가능합니다","/login?redirectURI="+ request.getRequestURI());
         }
+        String teamId = null;
+        String referer = request.getHeader("REFERER");
 
-        String teamId = pathVariables.get("teamId").toString();
+        log.info("referer = {}",referer);
+        try{
+            teamId = pathVariables.get("teamId").toString();
+        }catch (Exception e){
+            String reduri = "/teams";
+            if(referer != null){
+                reduri = referer;
+            }
+            return responseFlashMessage(request, response, fm, flashMap, "존재하지않는 주소입니다.", reduri);
+        }
+
         log.info("teamId = {}",teamId);
         request.setAttribute("teamId", teamId);
         if(teamId != null){
@@ -59,7 +73,15 @@ public class TeamsUserCheckInterceptor implements HandlerInterceptor {
                 request.setAttribute(CommonConst.CheckJoinTeam, joinTeam);
             }catch (IllegalStateException e){
                 log.info("team's authority fail [{}]", requestURI);
-                return responseFlashMessage(request, response, fm, flashMap, e.getMessage(),"/teams");
+                try{
+                    teamService.findById(Long.parseLong(teamId));
+                    return responseFlashMessage(request, response, fm, flashMap, "가입 후 접근이 가능합니다","/teams");
+                }catch (IllegalStateException ee){
+                    return responseFlashMessage(request, response, fm, flashMap, ee.getMessage(),"/teams");
+                }
+            }catch (NumberFormatException e){
+                log.info("team's authority fail [{}]", requestURI);
+                return responseFlashMessage(request, response, fm, flashMap, "존재하지 않는 주소입니다.","/teams");
             }
         }
 

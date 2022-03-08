@@ -7,11 +7,12 @@ import org.springframework.data.repository.query.Param;
 import team.project.Entity.Progress;
 import team.project.Entity.TeamEntity.Content;
 import team.project.Entity.TeamEntity.FreeContent;
+import team.project.Repository.Team.ContentStat.StatFreeContentRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface FreeContentRepository extends JpaRepository<FreeContent, Long> {
+public interface FreeContentRepository extends JpaRepository<FreeContent, Long>, StatFreeContentRepository {
 
     @Query("SELECT c FROM FreeContent c JOIN FETCH c.member m WHERE c.id = :contentId")
     Optional<FreeContent> findMemberById(@Param("contentId") Long id);

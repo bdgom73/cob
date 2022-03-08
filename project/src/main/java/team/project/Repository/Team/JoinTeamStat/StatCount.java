@@ -1,4 +1,4 @@
-package team.project.Repository.Team;
+package team.project.Repository.Team.JoinTeamStat;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

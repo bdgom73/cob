@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/headerV1 :: common_headerV1(~{::title},~{::link})">
+    <title>Cob - 게시글관리</title>
+    <link th:href="@{/assets/css/home.css}" href="./assets/css/home.css" rel="stylesheet" type="text/css" media="all">
+</head>
+<body th:replace="manager/fragment/managerTemplate :: manager_template(~{::main}, ${teamId})">
+    <main>
+        <!-- <script src="https://cdn.ckeditor.com/ckeditor5/32.0.0/classic/ckeditor.js"></script> -->
+        
+        <style>
+            .tingle-modal-box{
+                width: auto !important;
+                min-width: 60%;
+            }
+        </style>
+        <section>         
+            <div class=" mt-3 p-3 bg-dark text-light">
+                <h4 class="mb-2">프로젝트 관리</h4>
+            </div>
+            <table class="table text-light">
+                <thead>
+                    <tr>
+                        <th>del</th>
+                        <th>No</th>
+                        <th>프로젝트명</th>
+                        <th>시작일</th>
+                        <th>종료일</th>
+                        <td>수정</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="p : ${projects}" th:object="${p}">
+                        <td>
+                            <span style="cursor : pointer" th:onclick="deleteProject([[${teamId}]], [[${p.projectId}]], [[${p.projectTitle}]])"
+                                  class="badge bg-danger round">&nbsp;</span>
+                        </td>
+                        <td th:text="*{projectId}"></td>
+                        <td>
+                            <a th:href="@{/teams/}+${teamId}+@{/projects/}+${p.projectId}" th:text="*{projectTitle}"></a>
+                        </td>
+                        <td th:text="*{projectStartDate}"></td>
+                        <td th:text="*{projectEndDate}"></td>
+                        <td>
+                            <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" th:attr="data-bs-target=|#edit_project_modal${p.projectId}|">수정</button>
+                        </td>
+                        <!--  Modal  -->
+                        <div th:replace="manager/modal/managerEditProjectModal :: edit_project_modal(${p})"></div>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script th:inline="javascript">
+
+            function deleteProject(teamId, projectId, projectName){
+                let modal = new tingle.modal({
+                    onOpen : ()=>{
+                        $("#copy-projectName").on("change", (e)=>{
+                        if(e.target.value === projectName){
+                                $(e.target).css("border","1px solid #198754");
+                                $("#copy-delete-projectbtn").attr("disabled", false);
+                            }else{
+                                $(e.target).css("border","1px solid #dc3545");
+                                $("#copy-delete-projectbtn").attr("disabled", true);
+                            }
+                        });   
+                    }
+                });
+                const form = document.createElement("form");
+                form.action = `/@teams/${teamId}/projects/${projectId}/delete`;
+                form.method = "post"; 
+                form.innerHTML = `
+                    <p>정말로 프로젝트를 삭제하시겠습니까></p>
+                    <div style="font-size: 12px;">
+                        <p>해체 할 경우 관련된 일정 및 게시글 등의 모든 내용이 <span class="text-danger">모두 완전히 삭제</span>됩니다.</p>
+                        <p>❗ 해체 버튼 클릭시 모든 정보는 <span class="text-danger">복구</span>가 불가능합니다.</p>
+                    </div>
+                  
+                    <div class="mt-1 mb-3">
+                        <input class="form-control" id="copy-projectName" placeholder="'${projectName}' 입력해주세요"/>
+                    </div>
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-danger" id="copy-delete-projectbtn" disabled>삭제</button>
+                    </div> `;   
+
+                modal.setContent(form);
+                modal.open();
+                  
+            }
+
+           
+
+        </script>
+    </main>
+</body>
+</html>

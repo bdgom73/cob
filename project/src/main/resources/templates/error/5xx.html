@@ -6,7 +6,9 @@
 </head>
 <body th:replace="common/basicLayout :: basic_body(~{::main})">
 <main>
-    서버오류입니다.
+    <ul>
+        <li th:text="|message: ${message}|"></li>
+    </ul>
 </main>
 </body>
 </html>

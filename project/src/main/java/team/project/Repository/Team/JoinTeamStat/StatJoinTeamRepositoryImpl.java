@@ -1,4 +1,4 @@
-package team.project.Repository.Team;
+package team.project.Repository.Team.JoinTeamStat;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,13 +14,13 @@ import java.util.List;
 @Slf4j
 @Repository
 @Transactional
-public class StatJoinTeamRepositoryImpl implements StatJoinTeamRepository{
+public class StatJoinTeamRepositoryImpl implements StatJoinTeamRepository {
 
     private final EntityManager em;
 
     @Override
     public List<StatCount> findByStatDate(LocalDate date, Long teamId) {
-        String query = "SELECT new team.project.Repository.Team.StatCount(";
+        String query = "SELECT new team.project.Repository.Team.JoinTeamStat.StatCount(";
         query += " SUBSTRING(j.createdDate,0,7) ,";
         query += " count(j)";
         query += " ) FROM JoinTeam j";

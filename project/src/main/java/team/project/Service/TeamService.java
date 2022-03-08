@@ -14,6 +14,7 @@ import team.project.Repository.Team.JoinTeamRepository;
 import team.project.Repository.Team.OneLineRepository;
 import team.project.Repository.Team.TeamRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -50,6 +51,10 @@ public class TeamService {
 
     @Transactional
     public Long applyTeam(Long teamId, Long memberId){
+        if(memberId == null){
+            throw new IllegalStateException("회원이 아닙니다.");
+        }
+
         Optional<JoinTeam> findJoinTeam = joinTeamRepository.findMemberAndTeamByMemberAndTeam(memberId, teamId);
         if(findJoinTeam.isPresent()){
             JoinTeam joinTeam = findJoinTeam.get();
@@ -67,6 +72,7 @@ public class TeamService {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> {
             throw new IllegalStateException("회원을 찾을 수 없습니다");
         });
+        List<Integer> a = new ArrayList<>();
         JoinTeam joinTeam = JoinTeam.applyTeam(team, member);
         joinTeamRepository.save(joinTeam);
         return team.getId();

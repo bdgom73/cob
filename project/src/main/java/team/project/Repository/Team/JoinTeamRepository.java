@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import team.project.Entity.TeamEntity.JoinState;
 import team.project.Entity.TeamEntity.JoinTeam;
+import team.project.Repository.Team.JoinTeamStat.StatJoinTeamRepository;
 
 import java.util.List;
 import java.util.Optional;

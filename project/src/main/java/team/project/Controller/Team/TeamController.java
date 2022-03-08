@@ -190,7 +190,7 @@ public class TeamController {
     @PostMapping("/team/{teamId}/apply")
     @ResponseBody
     public void applyTeam(@PathVariable("teamId") Long teamId , @Login Long memberId, HttpServletResponse response) throws IOException {
-        teamService.applyTeam(teamId,memberId);
+            teamService.applyTeam(teamId,memberId);
 
     }
 

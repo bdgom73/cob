@@ -8,7 +8,7 @@ import team.project.Entity.TeamEntity.JoinState;
 import team.project.Entity.TeamEntity.JoinTeam;
 import team.project.Entity.Member;
 import team.project.Repository.Team.JoinTeamRepository;
-import team.project.Repository.Team.StatCount;
+import team.project.Repository.Team.JoinTeamStat.StatCount;
 
 import java.time.LocalDate;
 import java.util.List;

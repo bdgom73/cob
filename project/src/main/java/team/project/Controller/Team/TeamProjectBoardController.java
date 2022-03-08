@@ -104,7 +104,6 @@ public class TeamProjectBoardController {
         }catch (IllegalStateException e){
             return "redirect:/teams/"+teamId+"/projects/bbs/create";
         }
-
     }
 
     @GetMapping("/teams/{teamId}/projects/bbs/{projectId}/{contentId}")
